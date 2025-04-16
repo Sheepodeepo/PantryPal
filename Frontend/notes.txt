@@ -1,0 +1,7 @@
+exit to login page when server is down
+display server error on screen
+css
+
+sorting logic
+
+take off logout button in detail, can leave it for now
