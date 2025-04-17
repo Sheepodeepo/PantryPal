@@ -8,7 +8,7 @@ import org.json.*;
 public class Whisper implements API {
 
   private String API_ENDPOINT; // = "https://api.openai.com/v1/audio/transcriptions";
-  private String TOKEN; // = "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";
+  private String TOKEN;
   private String MODEL; //= "whisper-1";
   private String FILE_PATH;
   private String text;
@@ -17,7 +17,6 @@ public class Whisper implements API {
   public Whisper(String path) {
     this.FILE_PATH = path;
     API_ENDPOINT = "https://api.openai.com/v1/audio/transcriptions";
-    TOKEN = "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";
     MODEL = "whisper-1";
   }
 

@@ -12,7 +12,7 @@ import org.json.JSONObject;
 public class ChatGPT implements API {
 
   private String API_ENDPOINT; // = "https://api.openai.com/v1/completions";
-  private String API_KEY; // = "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";
+  private String API_KEY;
   private String MODEL; // = "text-davinci-003";
   private String recipeTitle;
   private String prompt;
@@ -20,7 +20,6 @@ public class ChatGPT implements API {
 
   public ChatGPT() {
     API_ENDPOINT = "https://api.openai.com/v1/completions";
-    API_KEY = "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";
     MODEL = "text-davinci-003";
   }
 
