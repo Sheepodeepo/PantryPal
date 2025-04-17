@@ -20,7 +20,7 @@ public class GenerateGeminiPrompt {
             promptBuilder.append(" with the ingredients: ").append(ingredients);
         }
 
-        promptBuilder.append(" in the format: Title: \n Ingredients: \n Instructions: \n");
+        promptBuilder.append(" in the format: Title: \nIngredients: \nInstructions: ");
         return promptBuilder.toString();
     }
 }
