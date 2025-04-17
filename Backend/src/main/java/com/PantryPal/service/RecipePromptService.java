@@ -4,7 +4,7 @@ import com.PantryPal.model.MealType;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GenerateGeminiPrompt {
+public class RecipePromptService {
     /**
      * Create a recipe prompt to use in Gemini.
      *

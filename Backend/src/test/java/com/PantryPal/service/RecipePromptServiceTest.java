@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GenerateGeminiPromptTest {
+class RecipePromptServiceTest {
 
     @Test
     void generateGeminiPromptWithoutIngredientsTest(){
-        GenerateGeminiPrompt genGeminiPrompt = new GenerateGeminiPrompt();
+        RecipePromptService genGeminiPrompt = new RecipePromptService();
         String expectedGeminiPromptWithoutIngredients = """
                 Generate a Breakfast recipe in the format: \
                 Title:\s
@@ -21,7 +21,7 @@ class GenerateGeminiPromptTest {
 
     @Test
     void generateGeminiPromptWithIngredientsTest(){
-        GenerateGeminiPrompt genGeminiPrompt = new GenerateGeminiPrompt();
+        RecipePromptService genGeminiPrompt = new RecipePromptService();
         String expectedGeminiPromptWithoutIngredients = """
                 Generate a Breakfast recipe with the ingredients: bananas, apples, flour in the format: \
                 Title:\s
