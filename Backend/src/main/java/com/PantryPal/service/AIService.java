@@ -31,21 +31,7 @@ public class AIService {
         restClient = RestClient.create();
     }
 
-    public String testAPIReq(){
-        requestBody = setUpRequestBody("Share a fun fact about LLM's");
-        api_url = api_endpoint + api_key;
-
-        ResponseEntity<String> resEntity = restClient.post()
-                .uri(api_url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(requestBody)
-                .retrieve()
-                .toEntity(String.class);
-
-        return resEntity.getBody();
-    }
-
-    public String sendPostReq(String prompt){
+    public String generateRecipe(String prompt){
         // Set Request Body
         requestBody = setUpRequestBody(prompt);
         api_url = api_endpoint + api_key;
@@ -62,7 +48,7 @@ public class AIService {
     }
 
 
-    public GeminiRequestContent setUpRequestBody(String prompt){
+    private GeminiRequestContent setUpRequestBody(String prompt){
         GeminiRequestText text = new GeminiRequestText(prompt);
         ArrayList<GeminiRequestText> textList = new ArrayList<>();
         textList.add(text);
