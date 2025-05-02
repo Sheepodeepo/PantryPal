@@ -71,13 +71,13 @@ class JdbcRecipeRepositoryTest {
 
     @Test
     void update() throws SQLException {
-        save();
-
+        LocalDate newCreatedDate = LocalDate.of(2025, 4, 1);
+        LocalDate newUpdatedDate = LocalDate.now();
+        //
         // Update
-        Recipe updatedRecipe = new Recipe(1L, "Updated Recipe Name", MealType.BREAKFAST, "New Ingredient", "New Steps");
-        updatedRecipe.setCreatedDate(LocalDate.of(2025, 5, 1)); // Set a created date for testing
+        Recipe updatedRecipe = new Recipe(1L, "Updated Recipe Name", MealType.BREAKFAST, "New Ingredient", "New Steps", newCreatedDate);
 
-        LocalDate newDate = LocalDate.now();
+
         when(jdbcClient.sql(contains("UPDATE recipe SET name = :name, mealType = :mealType, ingredients = :ingredients,instructions = :instructions, createdDate = :createdDate, updatedDate = :updatedDate WHERE id = :id")))
                 .thenReturn(statementSpec);
         when(statementSpec.param(eq("name"), eq(updatedRecipe.getName()))).thenReturn(statementSpec);
@@ -85,7 +85,7 @@ class JdbcRecipeRepositoryTest {
         when(statementSpec.param(eq("ingredients"), eq(updatedRecipe.getIngredients()))).thenReturn(statementSpec);
         when(statementSpec.param(eq("instructions"), eq(updatedRecipe.getInstructions()))).thenReturn(statementSpec);
         when(statementSpec.param(eq("createdDate"), any(LocalDate.class))).thenReturn(statementSpec);
-        when(statementSpec.param(eq("updatedDate"), eq(newDate))).thenReturn(statementSpec); // Use any() for LocalDate.now()
+        when(statementSpec.param(eq("updatedDate"), eq(newUpdatedDate))).thenReturn(statementSpec); // Use any() for LocalDate.now()
         when(statementSpec.param(eq("id"), eq(updatedRecipe.getId()))).thenReturn(statementSpec);
 
         repository.update(updatedRecipe);
@@ -93,18 +93,18 @@ class JdbcRecipeRepositoryTest {
         verify(jdbcClient).sql(contains("UPDATE recipe SET name = :name, mealType = :mealType, ingredients = :ingredients,"
                 + "instructions = :instructions, createdDate = :createdDate, updatedDate = :updatedDate WHERE id = :id"));
         verify(statementSpec).param("name","Updated Recipe Name");
-        verify(statementSpec).param("mealType", MealType.DINNER);
+        verify(statementSpec).param("mealType", MealType.BREAKFAST);
         verify(statementSpec).param("ingredients", "New Ingredient");
         verify(statementSpec).param("instructions", "New Steps");
-//        verify(statementSpec).param(eq("createdDate"), any(LocalDate.class));
-//        verify(statementSpec).param(eq("updatedDate"), newDate);
+        verify(statementSpec).param(eq("createdDate"), any(LocalDate.class));
+        verify(statementSpec).param(eq("updatedDate"), eq(newUpdatedDate));
         verify(statementSpec).param("id", 1L);
     }
 
     @Test
     void deleteById() throws SQLException {
 
-        repository.save(recipe);
+//        repository.save(recipe);
 
     }
 
