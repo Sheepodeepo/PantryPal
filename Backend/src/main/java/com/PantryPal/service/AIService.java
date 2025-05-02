@@ -1,7 +1,6 @@
 package com.PantryPal.service;
 
 
-import com.PantryPal.controller.GeminiModelController;
 import com.PantryPal.model.GeminiRequest.*;
 import com.PantryPal.model.GeminiResponse.*;
 import org.slf4j.Logger;
