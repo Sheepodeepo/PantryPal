@@ -11,7 +11,7 @@ public interface RecipeRepository {
     void save(Recipe recipe) throws SQLException;
     void update(Recipe recipe);
     void deleteById(long id);
-    Recipe findById(long id); //in ListCrudRepository returns Optional<Recipe>
+    Optional<Recipe> findById(long id); //in ListCrudRepository returns Optional<Recipe>
     List<Recipe> findAll();
     void deleteAll();
 
