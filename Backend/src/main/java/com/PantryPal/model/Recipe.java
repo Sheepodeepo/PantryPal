@@ -1,25 +1,45 @@
 package com.PantryPal.model;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 public class Recipe {
     private long id;
-    private String recipeName;
+    private String name;
     private MealType mealType;
-    private String recipeIngredients;
-    private String recipeInstructions;
-    private Instant recipeCreatedDate;
-    private Instant recipeUpdatedDate;
+    private String ingredients;
+    private String instructions;
+    private LocalDate createdDate;
+    private LocalDate updatedDate;
 
     public Recipe() {
     }
 
-    public Recipe(String recipeName, MealType mealType, String recipeIngredients, String recipeInstructions, Instant recipeCreatedDate) {
-        this.recipeName = recipeName;
+    public Recipe(long id, String name, MealType mealType, String ingredients, String instructions) {
+        this.id = id;
+        this.instructions = instructions;
+        this.ingredients = ingredients;
         this.mealType = mealType;
-        this.recipeIngredients = recipeIngredients;
-        this.recipeInstructions = recipeInstructions;
-        this.recipeCreatedDate = recipeCreatedDate;
+        this.name = name;
+    }
+
+    public Recipe(long id, String name, MealType mealType, String ingredients, String instructions, LocalDate createdDate) {
+        this.id = id;
+        this.name = name;
+        this.mealType = mealType;
+        this.ingredients = ingredients;
+        this.instructions = instructions;
+        this.createdDate = createdDate;
+        this.updatedDate = null;
+    }
+
+    public Recipe(String name, MealType mealType, String ingredients, String instructions, LocalDate createdDate) {
+        this.name = name;
+        this.mealType = mealType;
+        this.ingredients = ingredients;
+        this.instructions = instructions;
+        this.createdDate = createdDate;
+        this.updatedDate = null;
     }
 
     public long getId() {
@@ -30,28 +50,28 @@ public class Recipe {
         this.id = id;
     }
 
-    public Instant getRecipeUpdatedDate() {
-        return recipeUpdatedDate;
+    public LocalDate getUpdatedDate() {
+        return updatedDate;
     }
 
-    public void setRecipeUpdatedDate(Instant recipeUpdatedDate) {
-        this.recipeUpdatedDate = recipeUpdatedDate;
+    public void setUpdatedDate(LocalDate updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
-    public Instant getRecipeCreatedDate() {
-        return recipeCreatedDate;
+    public LocalDate getCreatedDate() {
+        return createdDate;
     }
 
-    public void setRecipeCreatedDate(Instant recipeCreatedDate) {
-        this.recipeCreatedDate = recipeCreatedDate;
+    public void setCreatedDate(LocalDate createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public String getRecipeInstructions() {
-        return recipeInstructions;
+    public String getInstructions() {
+        return instructions;
     }
 
-    public void setRecipeInstructions(String recipeInstructions) {
-        this.recipeInstructions = recipeInstructions;
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
     }
 
     public MealType getMealType() {
@@ -62,19 +82,19 @@ public class Recipe {
         this.mealType = mealType;
     }
 
-    public String getRecipeName() {
-        return recipeName;
+    public String getName() {
+        return name;
     }
 
-    public void setRecipeName(String recipeName) {
-        this.recipeName = recipeName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getRecipeIngredients() {
-        return recipeIngredients;
+    public String getIngredients() {
+        return ingredients;
     }
 
-    public void setRecipeIngredients(String recipeIngredients) {
-        this.recipeIngredients = recipeIngredients;
+    public void setIngredients(String ingredients) {
+        this.ingredients = ingredients;
     }
 }
