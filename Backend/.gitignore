@@ -35,3 +35,6 @@ out/
 
 #### VS Code ###
 .vscode/
+
+### Hide Certains codes
+src/main/resources/schema.sql
