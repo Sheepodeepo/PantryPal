@@ -4,6 +4,8 @@ import com.PantryPal.model.Recipe;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
@@ -31,14 +33,21 @@ public class JdbcRecipeRepository implements RecipeRepository{
     // .params(List.of(recipe.getName(),recipe.getMealType(),recipe.getIngredients(),recipe.getInstructions(), LocalDate.now()))
     @Override
     public void save(Recipe recipe) throws SQLException {
-        String query = "INSERT INTO recipe(name, mealType, ingredients, instructions, createdDate) values(:name, :mealType, :ingredients, :instructions, :createdDate)";
+        String query = "INSERT INTO recipe(name, mealType, ingredients, instructions, createdDate) values(:name, :mealType, :ingredients, :instructions, :createdDate) RETURNING id";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcClient.sql(query)
                 .param("name", recipe.getName())
                 .param("mealType", recipe.getMealType())
                 .param("ingredients", recipe.getIngredients())
                 .param("instructions", recipe.getInstructions())
                 .param("createdDate", LocalDate.now())
-                .update();
+                .update(keyHolder);
+
+        Number generatedId = keyHolder.getKey();
+        if(generatedId != null){
+            recipe.setId(generatedId.longValue());
+        }
     }
 
     //Alternatively:  String query = "UPDATE recipe SET name = ?, mealType = ?, ingredients = ?, instructions = ?, createdDate = ?, updatedDate = ? WHERE id = ?";
