@@ -1,5 +1,6 @@
 package com.PantryPal.controller;
 
+import com.PantryPal.dto.CreateRecipeDto;
 import com.PantryPal.model.MealType;
 import com.PantryPal.model.Recipe;
 import com.PantryPal.repository.RecipeRepository;
@@ -29,31 +30,46 @@ public class RecipeController {
         return new ResponseEntity<>(repository.findAll(), HttpStatus.ACCEPTED);
     }
 
-//    @GetMapping("/recipe/{id}")
-//    public ResponseEntity<Recipe> findRecipeById(@PathVariable Long id){
-//        return buildRecipeResponse(repository.findById(id));
-//    }
+    @GetMapping("/recipe/{id}")
+    public ResponseEntity<Recipe> findRecipeById(@PathVariable Long id){
+        return buildRecipeResponse(repository.findById(id));
+    }
 
-//    @GetMapping("/recipe")
-//    public ResponseEntity<Recipe> findRecipeByName(@RequestParam String recipeName){
-//        return buildRecipeResponse(repository.findByRecipeName(recipeName));
-//    }
+    @GetMapping("/recipe")
+    public ResponseEntity<Recipe> findRecipeByName(@RequestParam String recipeName){
+        return buildRecipeResponse(repository.findByRecipeName(recipeName));
+    }
 
-//    @PostMapping("/recipe")
-//    public Recipe generateRecipe(@RequestParam MealType mealType) {
-//
-//    }
+    @PostMapping("/recipe")
+    public String generateRecipe(@RequestBody CreateRecipeDto recipeDto) {
+        String recipeMealTypeStr = recipeDto.getMealType().toUpperCase();
+        MealType recipeMealType = MealType.valueOf(recipeMealTypeStr);
+        String ingredients = recipeDto.getRecipeIngredients();
+        
+        String recipePrompt = createRecipePrompt(recipeMealType, ingredients);
+        String recipeStr = generateRecipeString(recipePrompt);
+
+        // Parse recipe String
+        return recipeStr;
+    }
 
     @PutMapping("/recipe")
     public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id){
         return null;
     }
-//    @DeleteMapping("/recipe")
-//    public ResponseEntity<String> deleteRecipeByName(@RequestParam String recipeName){
-//        repository.deleteByRecipeName(recipeName);
-//        return new ResponseEntity<>("Deleted Recipe: " + recipeName + " successfully", HttpStatus.ACCEPTED);
-//    }
 
+    @DeleteMapping("/recipe")
+    public ResponseEntity<String> deleteRecipeByName(@RequestParam String recipeName){
+        repository.deleteByRecipeName(recipeName);
+        return new ResponseEntity<>("Deleted Recipe: " + recipeName + " successfully", HttpStatus.ACCEPTED);
+    }
+
+    /**
+     *
+     * @param mealType
+     * @param ingredients, if no ingredients prompted => empty string
+     * @return
+     */
     private String createRecipePrompt(MealType mealType, String ingredients){
         return recipePromptService.createGeminiPrompt(mealType, ingredients);
     }
@@ -70,5 +86,19 @@ public class RecipeController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private String[] parseRecipeStringToRecipe(String recipeStr){
+        String[] recipeDetails = new String[3]; // String array containing: <Name>, <Ingredients>, <Instructions>
+
+        //Parse recipeString
+        //parsedRecipe: Title: ___ #Ingredients: ___ #Instructions: ___
+        String[] parsedRecipe = recipeStr.split(":");
+
+
+        //Get Name:
+
+
+        return recipeDetails;
     }
 }
