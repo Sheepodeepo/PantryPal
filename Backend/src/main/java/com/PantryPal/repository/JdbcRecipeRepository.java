@@ -86,6 +86,14 @@ public class JdbcRecipeRepository implements RecipeRepository{
     }
 
     @Override
+    public Optional<Recipe> findByRecipeName(String name) {
+        String query = "SELECT * FROM recipe WHERE name = :name";
+        return jdbcClient.sql(query)
+                .param("name", name)
+                .query(Recipe.class)
+                .optional();    }
+
+    @Override
     public List<Recipe> findAll() {
         String query = "SELECT * FROM recipe";
         return jdbcClient.sql(query)
@@ -95,8 +103,16 @@ public class JdbcRecipeRepository implements RecipeRepository{
 
     @Override
     public void deleteAll() {
-        String query = "DELETE FROM recipe";
+        String query = "DELETE * FROM recipe";
         jdbcClient.sql(query)
+                .update();
+    }
+
+    @Override
+    public void deleteByRecipeName(String name) {
+        String query = "DELETE FROM recipe WHERE name = :name";
+        jdbcClient.sql(query)
+                .param("name", name)
                 .update();
     }
 }
