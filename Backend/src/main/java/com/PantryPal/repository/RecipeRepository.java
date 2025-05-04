@@ -12,8 +12,10 @@ public interface RecipeRepository {
     void update(Recipe recipe);
     void deleteById(long id);
     Optional<Recipe> findById(long id); //in ListCrudRepository returns Optional<Recipe>
+    Optional<Recipe> findByRecipeName(String name);
     List<Recipe> findAll();
     void deleteAll();
+    void deleteByRecipeName(String name);
 
 }
 //public interface RecipeRepository extends ListCrudRepository<Recipe, Long> {
