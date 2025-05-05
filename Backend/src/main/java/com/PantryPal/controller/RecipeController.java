@@ -37,7 +37,7 @@ public class RecipeController {
 
 
     @PostMapping("/recipe")
-    public ResponseEntity<Recipe> generateRecipe(@RequestBody CreateRecipeReqBodyDto recipeDto) throws SQLException {
+    public ResponseEntity<Recipe> generateRecipe(@RequestBody CreateRecipeReqBodyDto recipeDto) {
         String recipeMealTypeStr = recipeDto.getMealType().toUpperCase();
         MealType recipeMealType = MealType.valueOf(recipeMealTypeStr);
         String userIngredients = recipeDto.getRecipeIngredients();
