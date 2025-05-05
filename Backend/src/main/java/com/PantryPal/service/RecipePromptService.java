@@ -13,14 +13,14 @@ public class RecipePromptService {
      * @return String in the format: Title: ___ Ingredients: ___ Instructions: ___
      */
     public String createGeminiPrompt(MealType mealType, String ingredients){
-        StringBuilder promptBuilder = new StringBuilder("Generate a ");
+        StringBuilder promptBuilder = new StringBuilder("Create a ");
         promptBuilder.append(mealType.getDisplayName()).append(" recipe");
 
         if(ingredients != null && !ingredients.isEmpty()){
             promptBuilder.append(" with the ingredients: ").append(ingredients);
         }
 
-        promptBuilder.append(" in the format: Title: \nIngredients: \nInstructions: ");
+        promptBuilder.append(" in the format<#Title: #Ingredients: #Instructions: . Use commas to separate the list of ingredients and instructions.");
         return promptBuilder.toString();
     }
 }
