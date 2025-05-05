@@ -10,24 +10,15 @@ class RecipePromptServiceTest {
     @Test
     void generateGeminiPromptWithoutIngredientsTest(){
         RecipePromptService genGeminiPrompt = new RecipePromptService();
-        String expectedGeminiPromptWithoutIngredients = """
-                Generate a Breakfast recipe in the format: \
-                Title:\s
-                Ingredients:\s
-                Instructions: \
-                """;
+        String expectedGeminiPromptWithoutIngredients = "Create a BREAKFAST recipe in the format:<#Title: #Ingredients: #Instructions: . Use commas to separate the list of ingredients and instructions.>";
         assertEquals(expectedGeminiPromptWithoutIngredients, genGeminiPrompt.createGeminiPrompt(MealType.BREAKFAST,null));
     }
 
     @Test
     void generateGeminiPromptWithIngredientsTest(){
         RecipePromptService genGeminiPrompt = new RecipePromptService();
-        String expectedGeminiPromptWithoutIngredients = """
-                Generate a Breakfast recipe with the ingredients: bananas, apples, flour in the format: \
-                Title:\s
-                Ingredients:\s
-                Instructions: \
-                """;
+        String expectedGeminiPromptWithoutIngredients = "Create a BREAKFAST recipe with the ingredients: bananas, apples, flour in the format:<#Title: #Ingredients: #Instructions: ."
+        + " Use commas to separate the list of ingredients and instructions.>";
         assertEquals(expectedGeminiPromptWithoutIngredients, genGeminiPrompt.createGeminiPrompt(MealType.BREAKFAST,"bananas, apples, flour"));
     }
 
