@@ -1,6 +1,5 @@
 package com.PantryPal.model;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
 public class Recipe {
@@ -31,6 +30,14 @@ public class Recipe {
         this.instructions = instructions;
         this.createdDate = createdDate;
         this.updatedDate = null;
+    }
+
+    public Recipe(String name, MealType mealType, String ingredients, String instructions) {
+        this.name = name;
+        this.mealType = mealType;
+        this.ingredients = ingredients;
+        this.instructions = instructions;
+        this.createdDate = LocalDate.now();
     }
 
     public Recipe(String name, MealType mealType, String ingredients, String instructions, LocalDate createdDate) {
