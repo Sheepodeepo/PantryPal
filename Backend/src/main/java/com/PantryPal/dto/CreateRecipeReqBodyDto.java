@@ -1,15 +1,13 @@
 package com.PantryPal.dto;
 
-import com.PantryPal.model.MealType;
-
-public class CreateRecipeDto {
+public class CreateRecipeReqBodyDto {
     private String mealType;
     private String recipeIngredients;
 
-    public CreateRecipeDto() {
+    public CreateRecipeReqBodyDto() {
     }
 
-    public CreateRecipeDto(String mealType, String recipeIngredients) {
+    public CreateRecipeReqBodyDto(String mealType, String recipeIngredients) {
         this.mealType = mealType;
         this.recipeIngredients = recipeIngredients;
     }
