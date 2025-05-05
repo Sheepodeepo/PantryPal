@@ -1,6 +1,6 @@
 package com.PantryPal.controller;
 
-import com.PantryPal.dto.CreateRecipeDto;
+import com.PantryPal.dto.CreateRecipeReqBodyDto;
 import com.PantryPal.model.MealType;
 import com.PantryPal.model.Recipe;
 import com.PantryPal.repository.RecipeRepository;
@@ -32,29 +32,38 @@ public class RecipeController {
 
     @GetMapping("/recipe/{id}")
     public ResponseEntity<Recipe> findRecipeById(@PathVariable Long id){
-        return buildRecipeResponse(repository.findById(id));
+        return buildRecipeResponse(checkValidRecipe(repository.findById(id)));
     }
 
-    @GetMapping("/recipe")
-    public ResponseEntity<Recipe> findRecipeByName(@RequestParam String recipeName){
-        return buildRecipeResponse(repository.findByRecipeName(recipeName));
-    }
 
     @PostMapping("/recipe")
-    public String generateRecipe(@RequestBody CreateRecipeDto recipeDto) {
+    public ResponseEntity<Recipe> generateRecipe(@RequestBody CreateRecipeReqBodyDto recipeDto) throws SQLException {
         String recipeMealTypeStr = recipeDto.getMealType().toUpperCase();
         MealType recipeMealType = MealType.valueOf(recipeMealTypeStr);
-        String ingredients = recipeDto.getRecipeIngredients();
+        String userIngredients = recipeDto.getRecipeIngredients();
         
-        String recipePrompt = createRecipePrompt(recipeMealType, ingredients);
+        String recipePrompt = createRecipePrompt(recipeMealType, userIngredients);
         String recipeStr = generateRecipeString(recipePrompt);
 
+
         // Parse recipe String
-        return recipeStr;
+        String[] parsedStr = parseRecipeStringToRecipe(recipeStr); //Name:, Ingredients:, Instructions:
+
+        String recipeName = parsedStr[0].split(":")[1].strip();
+        String recipeIngredients = parsedStr[1].split(":")[1].strip();
+        String recipeInstructions = parsedStr[2].split(":")[1].strip();
+
+        Recipe newRecipe = new Recipe(recipeName, recipeMealType, recipeIngredients, recipeInstructions);
+        repository.save(newRecipe);
+        return buildRecipeResponse(newRecipe);
     }
 
     @PutMapping("/recipe")
-    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id){
+    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id,
+                                               @RequestBody Recipe updatedRecipe){
+        if(repository.findById(id).isPresent()){
+            // Add
+        }
         return null;
     }
 
@@ -78,27 +87,38 @@ public class RecipeController {
         return aiService.generateRecipe(recipePrompt);
     }
 
-    private ResponseEntity<Recipe> buildRecipeResponse(Optional<Recipe> optionalRecipe){
-        if(optionalRecipe.isPresent()){
-            return new ResponseEntity<>(optionalRecipe.get(), HttpStatus.ACCEPTED);
-        }
-        else if(optionalRecipe.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    private Recipe checkValidRecipe(Optional<Recipe> optionalRecipe){
+//        if(optionalRecipe.isEmpty()){
+//            return null;
+//        }
+//        return optionalRecipe.get();
+        return optionalRecipe.orElse(null);
     }
 
-    private String[] parseRecipeStringToRecipe(String recipeStr){
-        String[] recipeDetails = new String[3]; // String array containing: <Name>, <Ingredients>, <Instructions>
+    private ResponseEntity<Recipe> buildRecipeResponse(Recipe recipe){
+        if(recipe == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(recipe, HttpStatus.ACCEPTED);
+    }
 
+    /**
+     *
+     * @param recipeStr
+     * @return String[] where str[0]: prompt text, str[1]: Title: ..., str[2] Ingredients: \n ..., str[3]: Instructions: ...
+     */
+    private String[] parseRecipeStringToRecipe(String recipeStr){
         //Parse recipeString
         //parsedRecipe: Title: ___ #Ingredients: ___ #Instructions: ___
-        String[] parsedRecipe = recipeStr.split(":");
-
+        String[] parsedRecipe = recipeStr.split("#");
 
         //Get Name:
+        String[] recipeDetails = new String[3];
+        recipeDetails[0] = parsedRecipe[1];
+        recipeDetails[1] = parsedRecipe[2];
+        recipeDetails[2] = parsedRecipe[3];
 
-
+        //Return String of <Name>,<Ingredients>, <Instructions>
         return recipeDetails;
     }
 }
