@@ -6,10 +6,12 @@ import com.PantryPal.model.Recipe;
 import com.PantryPal.repository.RecipeRepository;
 import com.PantryPal.service.AIService;
 import com.PantryPal.service.RecipePromptService;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,15 +45,14 @@ public class RecipeController {
         String userIngredients = recipeDto.getRecipeIngredients();
         
         String recipePrompt = createRecipePrompt(recipeMealType, userIngredients);
-        String recipeStr = generateRecipeString(recipePrompt);
+        String recipeStr = generateRecipeStrWithAI(recipePrompt);
 
+//        System.out.println(recipeStr);
+        String[] parsedStr = parseRecipeStrToArr(recipeStr);
 
-        // Parse recipe String
-        String[] parsedStr = parseRecipeStringToRecipe(recipeStr); //Name:, Ingredients:, Instructions:
-
-        String recipeName = parsedStr[0].split(":")[1].strip();
-        String recipeIngredients = parsedStr[1].split(":")[1].strip();
-        String recipeInstructions = parsedStr[2].split(":")[1].strip();
+        String recipeName = stripRecipeDetailsFromParsedString(parsedStr,0);
+        String recipeIngredients = stripRecipeDetailsFromParsedString(parsedStr,1);
+        String recipeInstructions = stripRecipeDetailsFromParsedString(parsedStr, 2);
 
         Recipe newRecipe = new Recipe(recipeName, recipeMealType, recipeIngredients, recipeInstructions);
         repository.save(newRecipe);
@@ -59,39 +60,43 @@ public class RecipeController {
     }
 
     @PutMapping("/recipe")
-    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id,
-                                               @RequestBody Recipe updatedRecipe){
-        if(repository.findById(id).isPresent()){
-            // Add
+    public ResponseEntity<Recipe> updateRecipeById(@PathVariable Long id,
+                                               @RequestBody Recipe updatedRecipe)
+    {
+        Optional<Recipe> optionalRecipe = repository.findById(id);
+        if(optionalRecipe.isPresent()){
+            // Update Recipe
+            Recipe curRecipe = optionalRecipe.get();
+            curRecipe.setName(updatedRecipe.getName());
+            curRecipe.setMealType(updatedRecipe.getMealType());
+            curRecipe.setIngredients(updatedRecipe.getIngredients());
+            curRecipe.setInstructions(updatedRecipe.getInstructions());
+            curRecipe.setUpdatedDate(LocalDate.now());
+            return buildRecipeResponse(curRecipe);
         }
-        return null;
+        updatedRecipe.setCreatedDate(LocalDate.now());
+        updatedRecipe.setUpdatedDate(LocalDate.now());
+        return buildRecipeResponse(updatedRecipe);
     }
 
-    @DeleteMapping("/recipe")
-    public ResponseEntity<String> deleteRecipeByName(@RequestParam String recipeName){
-        repository.deleteByRecipeName(recipeName);
-        return new ResponseEntity<>("Deleted Recipe: " + recipeName + " successfully", HttpStatus.ACCEPTED);
+    @DeleteMapping("/recipe/{id}")
+    public ResponseEntity<String> deleteRecipeById(@PathVariable Long id){
+        Recipe recipe = checkValidRecipe(repository.findById(id));
+        if(recipe == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Deleted Recipe: " + recipe.getName() + " successfully", HttpStatus.ACCEPTED);
     }
 
-    /**
-     *
-     * @param mealType
-     * @param ingredients, if no ingredients prompted => empty string
-     * @return
-     */
     private String createRecipePrompt(MealType mealType, String ingredients){
         return recipePromptService.createGeminiPrompt(mealType, ingredients);
     }
 
-    private String generateRecipeString(String recipePrompt){
+    private String generateRecipeStrWithAI(String recipePrompt){
         return aiService.generateRecipe(recipePrompt);
     }
 
     private Recipe checkValidRecipe(Optional<Recipe> optionalRecipe){
-//        if(optionalRecipe.isEmpty()){
-//            return null;
-//        }
-//        return optionalRecipe.get();
         return optionalRecipe.orElse(null);
     }
 
@@ -104,12 +109,10 @@ public class RecipeController {
 
     /**
      *
-     * @param recipeStr
+     * @param recipeStr Generated Recipe in a String with Name, Ingredients, Instructions
      * @return String[] where str[0]: prompt text, str[1]: Title: ..., str[2] Ingredients: \n ..., str[3]: Instructions: ...
      */
-    private String[] parseRecipeStringToRecipe(String recipeStr){
-        //Parse recipeString
-        //parsedRecipe: Title: ___ #Ingredients: ___ #Instructions: ___
+    private String[] parseRecipeStrToArr(String recipeStr){
         String[] parsedRecipe = recipeStr.split("#");
 
         //Get Name:
@@ -120,5 +123,10 @@ public class RecipeController {
 
         //Return String of <Name>,<Ingredients>, <Instructions>
         return recipeDetails;
+    }
+
+    // 0: recipeName, 1: recipeIngredients, 2: recipeInstructions
+    private String stripRecipeDetailsFromParsedString(String[] formatStr, int index ){
+        return formatStr[index].split(":")[1].strip();
     }
 }
