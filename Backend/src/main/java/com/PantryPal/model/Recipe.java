@@ -1,8 +1,13 @@
 package com.PantryPal.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
 import java.time.LocalDate;
 
+@Table("recipe")
 public class Recipe {
+    @Id
     private long id;
     private String name;
     private MealType mealType;
