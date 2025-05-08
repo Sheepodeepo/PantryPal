@@ -19,5 +19,4 @@ import java.util.Optional;
 //
 //}
 public interface RecipeRepository extends ListCrudRepository<Recipe, Long> {
-    void deleteByRecipeName(String name);
 }
