@@ -1,6 +1,7 @@
 package com.PantryPal.controller;
 
 import com.PantryPal.dto.CreateRecipeReqBodyDto;
+import com.PantryPal.exceptions.GeminiServiceException;
 import com.PantryPal.model.MealType;
 import com.PantryPal.model.Recipe;
 import com.PantryPal.repository.RecipeRepository;
@@ -39,7 +40,7 @@ public class RecipeController {
 
 
     @PostMapping("/recipe")
-    public ResponseEntity<Recipe> generateRecipe(@RequestBody CreateRecipeReqBodyDto recipeDto) {
+    public ResponseEntity<Recipe> generateRecipe(@RequestBody CreateRecipeReqBodyDto recipeDto) throws GeminiServiceException {
         String recipeMealTypeStr = recipeDto.getMealType().toUpperCase();
         MealType recipeMealType = MealType.valueOf(recipeMealTypeStr);
         String userIngredients = recipeDto.getRecipeIngredients();
@@ -47,7 +48,6 @@ public class RecipeController {
         String recipePrompt = createRecipePrompt(recipeMealType, userIngredients);
         String recipeStr = generateRecipeStrWithAI(recipePrompt);
 
-//        System.out.println(recipeStr);
         String[] parsedStr = parseRecipeStrToArr(recipeStr);
 
         String recipeName = stripRecipeDetailsFromParsedString(parsedStr,0);
@@ -92,7 +92,7 @@ public class RecipeController {
         return recipePromptService.createGeminiPrompt(mealType, ingredients);
     }
 
-    private String generateRecipeStrWithAI(String recipePrompt){
+    private String generateRecipeStrWithAI(String recipePrompt) throws GeminiServiceException {
         return aiService.generateRecipe(recipePrompt);
     }
 
