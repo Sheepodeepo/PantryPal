@@ -10,6 +10,12 @@ class MealTypeTest {
     private final String DINNER = "DINNER";
     private final String SNACK = "SNACK";
 
+
+    @Test 
+    void failedTest(){
+        assertEquals(LUNCH, BREAKFAST);
+    }
+
     @Test
     void getDisplayName() {
         assertEquals("BREAKFAST", MealType.BREAKFAST.getDisplayName());
