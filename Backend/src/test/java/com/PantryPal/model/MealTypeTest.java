@@ -1,8 +1,7 @@
 package com.PantryPal.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class MealTypeTest {
 
@@ -13,10 +12,10 @@ class MealTypeTest {
 
     @Test
     void getDisplayName() {
-        assertEquals("Breakfast", MealType.BREAKFAST.getDisplayName());
-        assertEquals("Lunch", MealType.LUNCH.getDisplayName());
-        assertEquals("Dinner", MealType.DINNER.getDisplayName());
-        assertEquals("Snack", MealType.SNACK.getDisplayName());
+        assertEquals("BREAKFAST", MealType.BREAKFAST.getDisplayName());
+        assertEquals("LUNCH", MealType.LUNCH.getDisplayName());
+        assertEquals("DINNER", MealType.DINNER.getDisplayName());
+        assertEquals("SNACK", MealType.SNACK.getDisplayName());
 
     }
 
