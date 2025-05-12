@@ -1,8 +1,13 @@
 package com.PantryPal.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+@Table("user")
 public class User {
 
-    private Long id;
+    @Id
+    private long id;
     private String email;
     private String password;
 
@@ -30,7 +35,7 @@ public class User {
         this.password = password;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
