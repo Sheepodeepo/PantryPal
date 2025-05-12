@@ -7,7 +7,6 @@
 
 --https://stackoverflow.com/questions/77722951/is-there-a-way-that-i-store-timestamp-with-time-zone-in-postgres-and-not-convert
 
---CREATE TYPE meal as ENUM ("BREAKFAST", "LUNCH", "DINNER", "SNACK")
 DROP TABLE IF EXISTS Recipe;
 CREATE TABLE Recipe(
     id BIGSERIAL PRIMARY KEY,
@@ -17,4 +16,11 @@ CREATE TABLE Recipe(
     instructions text NOT NULL,
     created_date DATE,  --timestamptz == timestamp with timezone
     updated_date DATE
+);
+
+DROP TABLE IF EXISTS Users;
+CREATE TABLE Users(
+    id BIGSERIAL PRIMARY KEY,
+    email varchar(100) NOT NULL,
+    password varchar(50) NOT NULL
 );
