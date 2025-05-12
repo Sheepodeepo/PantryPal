@@ -107,7 +107,7 @@ public class RecipeController {
         return new ResponseEntity<>(recipe, HttpStatus.ACCEPTED);
     }
 
-    /**
+    /**Given recipeStr from AIService(Gemini): Parse into 3 sections: Name, Ingredients, Instructions
      *
      * @param recipeStr Generated Recipe in a String with Name, Ingredients, Instructions
      * @return String[] where str[0]: prompt text, str[1]: Title: ..., str[2] Ingredients: \n ..., str[3]: Instructions: ...
@@ -125,7 +125,12 @@ public class RecipeController {
         return recipeDetails;
     }
 
-    // 0: recipeName, 1: recipeIngredients, 2: recipeInstructions
+    /**Given the parsed Sections of a Recipe and the index, return the stripped details
+     *
+     * @param formatStr: String array of Length 3 where each value is => Name: [Recipe Name]
+     * @param index: The index of the section we want. 0 => Name, 1 => Ingredients, 2 => Instructions.
+     * @return String
+     */
     private String stripRecipeDetailsFromParsedString(String[] formatStr, int index ){
         return formatStr[index].split(":")[1].strip();
     }
