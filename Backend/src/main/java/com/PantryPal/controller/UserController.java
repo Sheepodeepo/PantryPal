@@ -1,20 +1,29 @@
 package com.PantryPal.controller;
 
+import com.PantryPal.config.AuthConfig;
 import com.PantryPal.dto.CreateUserReqBodyDto;
 import com.PantryPal.model.User;
 import com.PantryPal.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+/**Figure out what way to implement Authentication and Authorization.
+ * Authentication: State Management(Server Side Storage), Token-Based Auth(Ex: JWT)
+ * Authorization: To Read...
+ *
+ */
 @RestController
 public class UserController {
     private UserRepository userRepository;
+    private PasswordEncoder encoder;
 
-    public UserController(UserRepository userRepository){
+    public UserController(UserRepository userRepository, PasswordEncoder encoder){
         this.userRepository = userRepository;
+        this.encoder = encoder;
     }
 
     @GetMapping("/user")
@@ -33,7 +42,7 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<User> createUser(@RequestBody CreateUserReqBodyDto userReqBodyDto){
-        User user = new User(userReqBodyDto.getEmail(), userReqBodyDto.getPassword());
+        User user = new User(userReqBodyDto.getEmail(), encoder.encode(userReqBodyDto.getPassword()));
 
         return buildUserResponseEntity(user);
     }
@@ -42,11 +51,11 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody CreateUserReqBodyDto createUserReqBodyDto){
         User curUser = checkValidUser(userRepository.findById(id));
         if(curUser == null){
-            User newUser = new User(createUserReqBodyDto.getEmail(), createUserReqBodyDto.getPassword());
+            User newUser = new User(createUserReqBodyDto.getEmail(), encoder.encode(createUserReqBodyDto.getPassword()));
             return buildUserResponseEntity(newUser);
         }
         curUser.setEmail(createUserReqBodyDto.getEmail());
-        curUser.setPassword(createUserReqBodyDto.getPassword());
+        curUser.setPassword(encoder.encode(createUserReqBodyDto.getPassword()));
         return buildUserResponseEntity(curUser);
     }
 
