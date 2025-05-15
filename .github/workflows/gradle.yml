@@ -43,7 +43,10 @@ jobs:
       run: chmod +x ./gradlew
 
     - name: Build with Gradle Wrapper
-      run: ./gradlew build
+      env: 
+        API_KEY: ${{ secrets.API_KEY }}
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      run: ./gradlew build 
 
   # dependency-submission:
 
