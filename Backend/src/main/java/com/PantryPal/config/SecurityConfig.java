@@ -14,6 +14,7 @@ public class SecurityConfig {
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             http
                     .csrf(Customizer.withDefaults())
+                    .cors(Customizer.withDefaults())
                     .httpBasic(Customizer.withDefaults())
                     .formLogin(Customizer.withDefaults())
                     .authorizeHttpRequests(authorize -> authorize
@@ -22,7 +23,5 @@ public class SecurityConfig {
 
             return http.build();
         }
-
-    }
 
 }
