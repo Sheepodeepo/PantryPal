@@ -17,16 +17,14 @@ repositories {
 	mavenCentral()
 }
 
-ext {
-	set('springAiVersion', "1.0.0-M6")
-}
-
 configurations {
 	mockitoAgent
 }
 
 dependencies {
-	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -39,12 +37,6 @@ dependencies {
 	testImplementation("org.mockito:mockito-core:5.+")
 	mockitoAgent("org.mockito:mockito-core:5.+") {
 		transitive = false
-	}
-}
-
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
 	}
 }
 
