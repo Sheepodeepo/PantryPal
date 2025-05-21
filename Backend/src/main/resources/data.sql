@@ -3,3 +3,6 @@ VALUES('Spaghetti', 'DINNER', 'Pasta, Spaghetti Sauce, Optional: Parmesan Cheese
 
 INSERT INTO Users (email, password)
 VALUES('JoMama@epicsauce.com', 'whatisapassword1');
+
+INSERT INTO Users (email, password)
+VALUES('test', 'test');
