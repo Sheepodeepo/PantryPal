@@ -48,7 +48,7 @@ public class WebSecurityConfig {
                 )
                 // May want to require authentication to prevent non-users/authors from pinging the logout request too much
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/api/v1/auth/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
 
                             try {
