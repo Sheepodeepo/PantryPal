@@ -1,14 +1,22 @@
 package com.PantryPal.controller;
-
-import com.PantryPal.config.AuthConfig;
-import com.PantryPal.dto.CreateUserReqBodyDto;
+import com.PantryPal.dto.UserReqBodyDto;
 import com.PantryPal.model.User;
 import com.PantryPal.repository.UserRepository;
+import com.PantryPal.auth.AppUserDetailService;
+import com.PantryPal.auth.JwtService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Optional;
 
 /**Figure out what way to implement Authentication and Authorization.
@@ -18,48 +26,95 @@ import java.util.Optional;
  */
 @RestController
 public class UserController {
-    private UserRepository userRepository;
-    private PasswordEncoder encoder;
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    @Value("${security.jwt.expiration-time}")
+    private long jwtTokenAge;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AppUserDetailService myUserDetailService;
 
-    public UserController(UserRepository userRepository, PasswordEncoder encoder){
+    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AppUserDetailService myUserDetailService){
         this.userRepository = userRepository;
-        this.encoder = encoder;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.myUserDetailService = myUserDetailService;
     }
 
-    @GetMapping("/user")
+    //TODO: Rename API Mapping to something like /api/v1/auth/register for better Notation/Scalability for backend APIs
+    @PostMapping("/api/v1/auth/register")
+    public ResponseEntity<String> registerUser(@RequestBody UserReqBodyDto userReqBodyDto){
+        if(userRepository.findByEmail(userReqBodyDto.getEmail()).isPresent()){
+            return new ResponseEntity<>("User with the email already exists.", HttpStatus.CONFLICT);
+        }
+        User user = new User(userReqBodyDto.getEmail(), passwordEncoder.encode(userReqBodyDto.getPassword()));
+        return new ResponseEntity<>("Created User successfully.", HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("/api/v1/auth/login")
+    public ResponseEntity<String> loginUser(@RequestBody UserReqBodyDto userReqBodyDto, HttpServletResponse response){
+// Offset tokenAge from seconds to milliseconds for maxAge property
+        long jwtTokenAgeSecs = jwtTokenAge / 1000;
+        if (userRepository.findByEmail(userReqBodyDto.getEmail()).isEmpty()){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        try{
+            String jwtToken = jwtService.generateToken(myUserDetailService.loadUserByUsername(userReqBodyDto.getEmail()));
+            ResponseCookie responseCookie = ResponseCookie
+                    .from("JWT",jwtToken)
+                    .secure(true)
+                    .httpOnly(true)
+                    .path("/")
+                    .sameSite("Lax")
+                    .maxAge(jwtTokenAgeSecs)
+                    .build();
+            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+            User user = userRepository.findByEmail(userReqBodyDto.getEmail()).get();
+            return new ResponseEntity<>("Login Successful.", HttpStatus.ACCEPTED);
+        }
+        catch(BadCredentialsException exception){
+            log.info(exception.getMessage());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        catch(Exception exception){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/api/v1/user")
     public ResponseEntity<User> getUserByEmail(@RequestParam String email){
         Optional<User> optionalUser = userRepository.findByEmail(email);
         User user = checkValidUser(optionalUser);
         return buildUserResponseEntity(user);
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/api/v1/user/{id}")
     public ResponseEntity<User> getUserById(@PathVariable long id){
         Optional<User> optionalUser = userRepository.findById(id);
         User user = checkValidUser(optionalUser);
         return buildUserResponseEntity(user);
     }
+//
+//    @PostMapping("/user")
+//    public ResponseEntity<User> createUser(@RequestBody CreateUserReqBodyDto userReqBodyDto){
+//        User user = new User(userReqBodyDto.getEmail(), encoder.encode(userReqBodyDto.getPassword()));
+//
+//        return buildUserResponseEntity(user);
+//    }
 
-    @PostMapping("/user")
-    public ResponseEntity<User> createUser(@RequestBody CreateUserReqBodyDto userReqBodyDto){
-        User user = new User(userReqBodyDto.getEmail(), encoder.encode(userReqBodyDto.getPassword()));
-
-        return buildUserResponseEntity(user);
-    }
-
-    @PutMapping("/user/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody CreateUserReqBodyDto createUserReqBodyDto){
+    @PutMapping("/api/v1/user/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody UserReqBodyDto userReqBodyDto){
         User curUser = checkValidUser(userRepository.findById(id));
         if(curUser == null){
-            User newUser = new User(createUserReqBodyDto.getEmail(), encoder.encode(createUserReqBodyDto.getPassword()));
+            User newUser = new User(userReqBodyDto.getEmail(), passwordEncoder.encode(userReqBodyDto.getPassword()));
             return buildUserResponseEntity(newUser);
         }
-        curUser.setEmail(createUserReqBodyDto.getEmail());
-        curUser.setPassword(encoder.encode(createUserReqBodyDto.getPassword()));
+        curUser.setEmail(userReqBodyDto.getEmail());
+        curUser.setPassword(passwordEncoder.encode(userReqBodyDto.getPassword()));
         return buildUserResponseEntity(curUser);
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/api/v1/user/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable long id){
         User curUser = checkValidUser(userRepository.findById(id));
         if(curUser == null){
@@ -70,7 +125,7 @@ public class UserController {
         return new ResponseEntity<>("User deleted.",HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/user/")
+    @DeleteMapping("/api/v1/user")
     public ResponseEntity<String> deleteUserByEmail(@RequestParam String email){
         User curUser = checkValidUser(userRepository.findByEmail(email));
         if(curUser == null){
