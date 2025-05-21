@@ -1,10 +1,10 @@
 package com.PantryPal.dto;
 
-public class CreateUserReqBodyDto {
+public class UserReqBodyDto {
     private String email;
     private String password;
 
-    public CreateUserReqBodyDto(String email, String password) {
+    public UserReqBodyDto(String email, String password) {
         this.email = email;
         this.password = password;
     }
