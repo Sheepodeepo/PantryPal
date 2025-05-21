@@ -28,18 +28,18 @@ public class RecipeController {
         this.recipePromptService = recipePromptService;
     }
 
-    @GetMapping("/recipe/all")
+    @GetMapping("api/v1/recipe")
     public ResponseEntity<List<Recipe>> getAllRecipes(){
         return new ResponseEntity<>(repository.findAll(), HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/recipe/{id}")
+    @GetMapping("api/v1/recipe/{id}")
     public ResponseEntity<Recipe> findRecipeById(@PathVariable Long id){
         return buildRecipeResponse(checkValidRecipe(repository.findById(id)));
     }
 
 
-    @PostMapping("/recipe")
+    @PostMapping("api/v1/recipe")
     public ResponseEntity<Recipe> generateRecipe(@RequestBody CreateRecipeReqBodyDto recipeDto) throws GeminiServiceException {
         String recipeMealTypeStr = recipeDto.getMealType().toUpperCase();
         MealType recipeMealType = MealType.valueOf(recipeMealTypeStr);
@@ -59,7 +59,7 @@ public class RecipeController {
         return buildRecipeResponse(newRecipe);
     }
 
-    @PutMapping("/recipe")
+    @PutMapping("api/v1/recipe")
     public ResponseEntity<Recipe> updateRecipeById(@PathVariable Long id,
                                                @RequestBody Recipe updatedRecipe)
     {
@@ -79,7 +79,7 @@ public class RecipeController {
         return buildRecipeResponse(updatedRecipe);
     }
 
-    @DeleteMapping("/recipe/{id}")
+    @DeleteMapping("api/v1/recipe/{id}")
     public ResponseEntity<String> deleteRecipeById(@PathVariable Long id){
         Recipe recipe = checkValidRecipe(repository.findById(id));
         if(recipe == null){
