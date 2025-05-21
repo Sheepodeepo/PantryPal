@@ -14,7 +14,7 @@ CREATE TABLE Recipe(
     meal_type varchar(20),
     ingredients text NOT NULL,
     instructions text NOT NULL,
-    created_date DATE,  --timestamptz == timestamp with timezone
+    created_date DATE,
     updated_date DATE
 );
 
@@ -22,5 +22,5 @@ DROP TABLE IF EXISTS Users;
 CREATE TABLE Users(
     id BIGSERIAL PRIMARY KEY,
     email varchar(100) NOT NULL,
-    password varchar(50) NOT NULL
+    password varchar(255) NOT NULL
 );
