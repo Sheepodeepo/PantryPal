@@ -9,4 +9,7 @@ ___
 * https://learnsql.com/blog/postgresql-cheat-sheet/
 
 
-___ 
+### To run ./gradlew build to verify Unit Tests
+* Go to Git Bash or any Unix/Linux Terminal
+* Set all environmental variables in application-test.properties with ```export ENV=ENV_VAR```
+* ```./gradlew build``` 
