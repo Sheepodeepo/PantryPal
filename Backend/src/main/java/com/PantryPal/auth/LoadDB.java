@@ -3,14 +3,17 @@ package com.PantryPal.auth;
 import com.PantryPal.model.User;
 import com.PantryPal.repository.RecipeRepository;
 import com.PantryPal.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@Profile("!test")
 public class LoadDB {
     private static final Logger log = LoggerFactory.getLogger(LoadDB.class);
     private final AuthConfig authConfig;
