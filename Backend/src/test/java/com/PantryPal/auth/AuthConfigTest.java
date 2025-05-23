@@ -1,4 +1,4 @@
-package com.PantryPal.config;
+package com.PantryPal.auth;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
