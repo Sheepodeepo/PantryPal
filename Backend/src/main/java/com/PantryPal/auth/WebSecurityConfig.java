@@ -42,8 +42,7 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/recipe/**").permitAll()
-                        .requestMatchers("/login", "/register", "/logout").permitAll()
+                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 // May want to require authentication to prevent non-users/authors from pinging the logout request too much
