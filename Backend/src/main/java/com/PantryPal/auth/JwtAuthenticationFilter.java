@@ -62,11 +62,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
-            filterChain.doFilter(request,response);
         }
         catch (Exception e){
-            logger.error("Unexpected Internal Server Error Message: ", e);
+//            logger.error("Unexpected Internal Server Error Message: ", e);
+            SecurityContextHolder.getContext().setAuthentication(null);
             handlerExceptionResolver.resolveException(request,response,null,e);
+        }
+        finally {
+            filterChain.doFilter(request,response);
         }
     }
 }
