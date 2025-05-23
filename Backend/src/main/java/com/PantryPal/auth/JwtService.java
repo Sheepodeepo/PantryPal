@@ -48,6 +48,8 @@ public class JwtService {
      *  Reference:  <a href="https://github.com/jwtk/jjwt?tab=readme-ov-file#reading-a-jwe">...</a>
      * @param token:
      * @return Payload in terms of Claims Object
+     *
+     * Add ways to throw different exceptions => Expired JWT Tokens, Invalid JWT Tokens?
      */
     public Claims extractAllClaims(String token){
         return Jwts
@@ -61,7 +63,6 @@ public class JwtService {
 
     private SecretKey getSignInKey(){
         byte[] decodedKey = Base64.getDecoder().decode(jwtSecretKey);
-//        return new SecretKeySpec(decodedKey, "HmacSHA512");
         return Keys.hmacShaKeyFor(decodedKey);
     }
 
