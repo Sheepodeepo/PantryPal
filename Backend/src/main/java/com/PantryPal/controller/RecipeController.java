@@ -1,5 +1,6 @@
 package com.PantryPal.controller;
 
+import com.PantryPal.auth.MyUserDetails;
 import com.PantryPal.dto.CreateRecipeReqBodyDto;
 import com.PantryPal.exceptions.GeminiServiceException;
 import com.PantryPal.model.MealType;
@@ -7,20 +8,30 @@ import com.PantryPal.model.Recipe;
 import com.PantryPal.repository.RecipeRepository;
 import com.PantryPal.service.AIService;
 import com.PantryPal.service.RecipePromptService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/** Maybe use Spring Security ALC >> Authenication.get()... for scalability.
+ *
+ */
 @RestController
+//@RequestMapping("api/v1/recipe")
 public class RecipeController {
-    private AIService aiService;
-    private RecipeRepository repository;
-    private RecipePromptService recipePromptService;
+    private static final Logger logger = LoggerFactory.getLogger(RecipeController.class);
+    private final AIService aiService;
+    private final RecipeRepository repository;
+    private final RecipePromptService recipePromptService;
 
     public RecipeController(RecipeRepository repository, AIService aiService, RecipePromptService recipePromptService) {
         this.repository = repository;
@@ -28,14 +39,18 @@ public class RecipeController {
         this.recipePromptService = recipePromptService;
     }
 
-    @GetMapping("api/v1/recipe")
-    public ResponseEntity<List<Recipe>> getAllRecipes(){
-        return new ResponseEntity<>(repository.findAll(), HttpStatus.ACCEPTED);
+    @GetMapping("/api/v1/recipe")
+    public ResponseEntity<List<Recipe>> getAllRecipesFromUser(){
+        MyUserDetails curUser = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = curUser.getId();
+        return new ResponseEntity<>(repository.findAllByUserId(userId), HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("api/v1/recipe/{id}")
-    public ResponseEntity<Recipe> findRecipeById(@PathVariable Long id){
-        return buildRecipeResponse(checkValidRecipe(repository.findById(id)));
+
+    @GetMapping("api/v1/recipe/{recipe_id}")
+    public ResponseEntity<Recipe> findRecipeByRecipeId(@PathVariable Long recipe_id){
+//        Add a check if it is their own recipe_id
+        return buildRecipeResponse(checkValidRecipe(repository.findById(recipe_id)));
     }
 
 
@@ -63,6 +78,12 @@ public class RecipeController {
     public ResponseEntity<Recipe> updateRecipeById(@PathVariable Long id,
                                                @RequestBody Recipe updatedRecipe)
     {
+        MyUserDetails curUser = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = curUser.getId();
+
+        // Restrict Update if given recipe's Ids user_id isn't curUserId
+
+
         Optional<Recipe> optionalRecipe = repository.findById(id);
         if(optionalRecipe.isPresent()){
             // Update Recipe
@@ -81,10 +102,14 @@ public class RecipeController {
 
     @DeleteMapping("api/v1/recipe/{id}")
     public ResponseEntity<String> deleteRecipeById(@PathVariable Long id){
+        MyUserDetails curUser = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = curUser.getId();
+
         Recipe recipe = checkValidRecipe(repository.findById(id));
         if(recipe == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        repository.delete(recipe);
         return new ResponseEntity<>("Deleted Recipe: " + recipe.getName() + " successfully", HttpStatus.ACCEPTED);
     }
 
