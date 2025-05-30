@@ -1,5 +1,6 @@
 package com.PantryPal.auth;
 
+import com.PantryPal.model.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -15,12 +16,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
-import java.security.SignatureException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,17 +46,16 @@ class JwtAuthenticationFilterTest {
     private FilterChain filterChain;
 
     private final String TEST_EMAIL = "test@example.com";
+    private final String TEST_PASSWORD = "dummy";
     private final String TEST_JWT_TOKEN = "test.jwt.token";
-    private UserDetails testUserDetails;
+    private MyUserDetails myUserDetails;
 
     @BeforeEach
     void setUp() {
         // Clear the SecurityContext before each test to ensure isolation
         SecurityContextHolder.clearContext();
-        testUserDetails = User.withUsername(TEST_EMAIL)
-                .password("dummy")
-                .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
-                .build();
+        User testUser = new User(TEST_EMAIL,TEST_PASSWORD);
+        myUserDetails = new MyUserDetails(testUser);
     }
 
     @Test
@@ -101,8 +98,8 @@ class JwtAuthenticationFilterTest {
         Cookie jwtCookie = new Cookie("JWT", TEST_JWT_TOKEN);
         when(request.getCookies()).thenReturn(new Cookie[]{jwtCookie});
         when(jwtService.extractEmail(TEST_JWT_TOKEN)).thenReturn(TEST_EMAIL);
-        when(appUserDetailService.loadUserByUsername(TEST_EMAIL)).thenReturn(testUserDetails);
-        when(jwtService.isTokenValid(TEST_JWT_TOKEN,testUserDetails)).thenReturn(true);
+        when(appUserDetailService.loadUserByUsername(TEST_EMAIL)).thenReturn(myUserDetails);
+        when(jwtService.isTokenValid(TEST_JWT_TOKEN,myUserDetails)).thenReturn(true);
 
         jwtAuthenticationFilter.doFilterInternal(request,response,filterChain);
 
@@ -110,15 +107,18 @@ class JwtAuthenticationFilterTest {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(authentication);
         assertEquals(authentication.getName(),TEST_EMAIL);
+        MyUserDetails myUserDetails1 = (MyUserDetails) authentication.getPrincipal();
+        assertEquals(myUserDetails1.getUsername(), TEST_EMAIL);
         //Create into Hashset to check if the items in authorities are equal(b/c order doesn't matter)
-        assertEquals(new HashSet<>(authentication.getAuthorities()), new HashSet<>(testUserDetails.getAuthorities()));
+        assertEquals(new HashSet<>(authentication.getAuthorities()), new HashSet<>(myUserDetails.getAuthorities()));
         assertTrue(authentication.isAuthenticated());
 
         verify(jwtService).extractEmail(TEST_JWT_TOKEN);
         verify(appUserDetailService).loadUserByUsername(TEST_EMAIL);
-        verify(jwtService).isTokenValid(TEST_JWT_TOKEN,testUserDetails);
+        verify(jwtService).isTokenValid(TEST_JWT_TOKEN,myUserDetails);
         verify(filterChain).doFilter(request,response);
     }
+
     @Test
     void doFilterInternal_whenValidJwtAndAlreadyAuthenticated_shouldNotReAuthenticate() throws ServletException, IOException {
         // Simulate a pre-existing authentication in the context
@@ -149,7 +149,6 @@ class JwtAuthenticationFilterTest {
         jwtAuthenticationFilter.doFilterInternal(request,response,filterChain);
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-//        verify(handlerExceptionResolver).resolveException(eq(request),eq(response),isNull(), any(SignatureException.class));
         verify(handlerExceptionResolver).resolveException(eq(request), eq(response), isNull(), any(RuntimeException.class));
         verify(filterChain).doFilter(request,response);
     }
@@ -159,15 +158,15 @@ class JwtAuthenticationFilterTest {
         Cookie jwtCookie = new Cookie("JWT", TEST_JWT_TOKEN);
         when(request.getCookies()).thenReturn(new Cookie[]{jwtCookie});
         when(jwtService.extractEmail(TEST_JWT_TOKEN)).thenReturn(TEST_EMAIL);
-        when(appUserDetailService.loadUserByUsername(TEST_EMAIL)).thenReturn(testUserDetails);
-        when(jwtService.isTokenValid(TEST_JWT_TOKEN,testUserDetails)).thenReturn(false);
+        when(appUserDetailService.loadUserByUsername(TEST_EMAIL)).thenReturn(myUserDetails);
+        when(jwtService.isTokenValid(TEST_JWT_TOKEN,myUserDetails)).thenReturn(false);
 
         jwtAuthenticationFilter.doFilterInternal(request,response,filterChain);
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(jwtService).extractEmail(TEST_JWT_TOKEN);
         verify(appUserDetailService).loadUserByUsername(TEST_EMAIL);
-        verify(jwtService).isTokenValid(TEST_JWT_TOKEN,testUserDetails);
+        verify(jwtService).isTokenValid(TEST_JWT_TOKEN,myUserDetails);
         verify(filterChain).doFilter(request,response);
         verifyNoInteractions(handlerExceptionResolver);
 
