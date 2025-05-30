@@ -23,6 +23,11 @@ public class AppUserDetailService implements UserDetailsService {
             throw new UsernameNotFoundException("User with " + username + " Not Found.");
         }
         User user = userRepository.findByEmail(username).get();
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), Collections.emptyList());
+        return new MyUserDetails(user);
+//        return new MyUserDetails(user.getEmail(), user.getPassword(), Collections.emptyList());
+
+
+        //PREV
+//        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), Collections.emptyList());
     }
 }
