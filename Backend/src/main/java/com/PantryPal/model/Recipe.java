@@ -9,6 +9,7 @@ import java.time.LocalDate;
 public class Recipe {
     @Id
     private long id;
+    private long userId;
     private String name;
     private MealType mealType;
     private String ingredients;
@@ -19,22 +20,12 @@ public class Recipe {
     public Recipe() {
     }
 
-    public Recipe(long id, String name, MealType mealType, String ingredients, String instructions) {
-        this.id = id;
+    public Recipe(long userId, String name, MealType mealType, String ingredients, String instructions) {
+        this.userId = userId;
         this.instructions = instructions;
         this.ingredients = ingredients;
         this.mealType = mealType;
         this.name = name;
-    }
-
-    public Recipe(long id, String name, MealType mealType, String ingredients, String instructions, LocalDate createdDate) {
-        this.id = id;
-        this.name = name;
-        this.mealType = mealType;
-        this.ingredients = ingredients;
-        this.instructions = instructions;
-        this.createdDate = createdDate;
-        this.updatedDate = null;
     }
 
     public Recipe(String name, MealType mealType, String ingredients, String instructions) {
@@ -43,15 +34,6 @@ public class Recipe {
         this.ingredients = ingredients;
         this.instructions = instructions;
         this.createdDate = LocalDate.now();
-    }
-
-    public Recipe(String name, MealType mealType, String ingredients, String instructions, LocalDate createdDate) {
-        this.name = name;
-        this.mealType = mealType;
-        this.ingredients = ingredients;
-        this.instructions = instructions;
-        this.createdDate = createdDate;
-        this.updatedDate = null;
     }
 
     public long getId() {
@@ -109,4 +91,13 @@ public class Recipe {
     public void setIngredients(String ingredients) {
         this.ingredients = ingredients;
     }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
 }
