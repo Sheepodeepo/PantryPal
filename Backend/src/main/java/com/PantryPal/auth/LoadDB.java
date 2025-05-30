@@ -1,5 +1,7 @@
 package com.PantryPal.auth;
 
+import com.PantryPal.model.MealType;
+import com.PantryPal.model.Recipe;
 import com.PantryPal.model.User;
 import com.PantryPal.repository.RecipeRepository;
 import com.PantryPal.repository.UserRepository;
@@ -28,6 +30,10 @@ public class LoadDB {
             PasswordEncoder passwordEncoder = authConfig.passwordEncoder();
             log.info("Preload User 1: {}", userRepository.save(new User("test", passwordEncoder.encode("test"))));
             log.info("Preload User 2: {}", userRepository.save(new User("test@gmail", passwordEncoder.encode("longpasswordtest1"))));
+
+            log.info("Preload Recipe 1: {}", recipeRepository.save(new Recipe(1,"dummy-name", MealType.BREAKFAST,"dummy-ingredients","dummy-instructions")));
+            log.info("Preload Recipe 2: {}", recipeRepository.save(new Recipe(1,"dummy-name2", MealType.BREAKFAST,"dummy-ingredients2","dummy-instructions2")));
+            log.info("Preload Recipe 3: {}", recipeRepository.save(new Recipe(2,"dummy-name3", MealType.BREAKFAST,"dummy-ingredients3","dummy-instructions3")));
 
         };
     }
