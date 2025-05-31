@@ -12,7 +12,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,19 +31,20 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     @Value("${security.jwt.expiration-time}")
     private long jwtTokenAge;
+    private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AppUserDetailService myUserDetailService;
 
-    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AppUserDetailService myUserDetailService){
+    public UserController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AppUserDetailService myUserDetailService){
+        this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.myUserDetailService = myUserDetailService;
     }
 
-    //TODO: Rename API Mapping to something like /api/v1/auth/register for better Notation/Scalability for backend APIs
     @PostMapping("/api/v1/auth/register")
     public ResponseEntity<String> registerUser(@RequestBody UserReqBodyDto userReqBodyDto){
         if(userRepository.findByEmail(userReqBodyDto.getEmail()).isPresent()){
@@ -56,8 +59,13 @@ public class UserController {
 // Offset tokenAge from seconds to milliseconds for maxAge property
         long jwtTokenAgeSecs = jwtTokenAge / 1000;
         if (userRepository.findByEmail(userReqBodyDto.getEmail()).isEmpty()){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("User not found.", HttpStatus.FORBIDDEN);
         }
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                userReqBodyDto.getEmail(),
+                userReqBodyDto.getPassword()
+        ));
+
         try{
             String jwtToken = jwtService.generateToken(myUserDetailService.loadUserByUsername(userReqBodyDto.getEmail()));
             ResponseCookie responseCookie = ResponseCookie
@@ -74,10 +82,10 @@ public class UserController {
         }
         catch(BadCredentialsException exception){
             log.info(exception.getMessage());
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Incorrect Email and Password.", HttpStatus.FORBIDDEN);
         }
         catch(Exception exception){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Unexpected Internal Server Error. Please Try Again Later.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -87,20 +95,6 @@ public class UserController {
         User user = checkValidUser(optionalUser);
         return buildUserResponseEntity(user);
     }
-
-    @GetMapping("/api/v1/user/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable long id){
-        Optional<User> optionalUser = userRepository.findById(id);
-        User user = checkValidUser(optionalUser);
-        return buildUserResponseEntity(user);
-    }
-//
-//    @PostMapping("/user")
-//    public ResponseEntity<User> createUser(@RequestBody CreateUserReqBodyDto userReqBodyDto){
-//        User user = new User(userReqBodyDto.getEmail(), encoder.encode(userReqBodyDto.getPassword()));
-//
-//        return buildUserResponseEntity(user);
-//    }
 
     @PutMapping("/api/v1/user/{id}")
     public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody UserReqBodyDto userReqBodyDto){
