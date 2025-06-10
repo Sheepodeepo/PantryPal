@@ -1,3 +1,14 @@
+# Personal Stuff
+
+https://tiny-img.com/blog/best-image-size-for-website/
+
+### Form Submission/Validation
+- https://www.geeksforgeeks.org/javascript/how-to-validate-email-address-using-regexp-in-javascript/
+
+
+### AYE AYE
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
