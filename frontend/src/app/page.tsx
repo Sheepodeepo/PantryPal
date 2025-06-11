@@ -1,31 +1,46 @@
-import Navbar from "@/app/ui/navbar";
-import Image from 'next/image';
-import Link from "next/link";
-import { HiArrowRight } from 'react-icons/hi2';
+'use client';
+
+import { useState, useEffect } from "react"
+import PublicHomePage from "./ui/pages/PublicHomePage"
+import UserHomePage from "./ui/pages/UserHomePage";
+import Navbar from "./ui/navbar";
 
 export default function Home(){
+  const [loginStatus, setLoginStatus] = useState(false);
+
+
+  useEffect(() => {
+    const checkLoginStatus = async () =>{
+      try{
+        const res = await fetch("http://localhost:8080/api/v1/auth/status",{
+          credentials : "include"
+        })
+        const data = await res.json();
+        console.log(data);
+        // if(res.ok){
+        //   setLoginStatus(true);
+        //   console.log("User Logged In");
+        // }
+        // else{
+        //   setLoginStatus(false);
+        //   console.log("User logged out");
+        // }
+      } 
+      catch(error){
+        setLoginStatus(false);
+        console.log("Internal Server Error Occured");
+        console.log(error);
+      }
+    };
+    checkLoginStatus();
+  },[]);
+
+
+
   return ( 
     <main className="">
-      <Navbar/>
-      {/* Hero */}
-        <div className="relative bg-[url('/images/1920.jpg')] bg-cover flex flex-col items-center justify-center w-auto h-screen">
-          <div className="flex flex-col items-center text-white ">
-            <div className="text-2xl md:text-5xl font-bold py-2 ">Welcome to Pantry Pal. </div>
-            <div className="text-base md:text-3xl text-center font-bold max-w-2xl py-2 "> Where you can discover all sorts of different recipes. </div>
-            
-            <Link 
-              href ="/login"
-              className="flex flex-row items-center py-2 bg-black text-white px-2 rounded-lg">
-                <span className="text-base md:text-xl px-2"> Log in </span> <HiArrowRight className="w-5 md:w-6"/>
-            </Link>
-          </div>
-
-        </div>
-
-
-        {/* <div className="flex flex-col max-w-4xl mx-auto min-h-screen">  */}
-
-        {/* </div> */}
+      <Navbar/> 
+      {loginStatus ? <UserHomePage/> : <PublicHomePage/>}
     </main>
   )
 }
