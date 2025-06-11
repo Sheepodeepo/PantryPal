@@ -4,57 +4,47 @@ import Navbar from "@/app/ui/navbar";
 import Link from "next/link";
 import Button from "../ui/button";
 import { FormEvent, useState } from "react";
-import ErrorMsg from "../ui/errormsg";
-import { useRouter } from "next/navigation";
 
 export default function LoginForm(){
-    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState("Incorrect Email and/or Password.");
-    const [validCredentials, setValidCredentials] = useState(true);
-
-    const login = async () => {
-        const responseBody = {
-            "email" : email,
-            "password" : password
+    const [errorMsg, setErrorMsg] = useState('');
+    const [isError, setIsError] = useState(false);
+    
+    const validateEmail = () =>{
+        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if(re.test(email)){
+            setIsError(false);
+            setErrorMsg('');
+            return true;
         }
-
-        try{
-            const res = await fetch("http://localhost:8080/api/v1/auth/login",{
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                  },
-                body : JSON.stringify(responseBody),
-                credentials : "include"
-            });
-            if(res.ok){
-                setValidCredentials(true);
-                setErrorMessage("Incorrect Email and/or Password.");
-                return true;
-            }
-            else{
-                setValidCredentials(false);
-                setErrorMessage("Incorrect Email and/or Password.");
-                return false;
-            }
-        }
-        catch(error){
-            setValidCredentials(false);
-            setErrorMessage("Internal Server Error Occured. Please try again later.");
+        else{
+            setIsError(true);
+            setErrorMsg("Invalid Email.");
+            return false;
         }
     }
 
-    const handleSubmit = async(e: FormEvent<HTMLFormElement>) =>{
+    const validatePassword = () => {
+        const re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/; //Checks length 8+, symbol, upper+lwrcase letters, & a number.
+        if(re.test(password)){
+            setIsError(false);
+            setErrorMsg('');
+            return true;
+        }
+        else{
+            setIsError(true);
+            setErrorMsg("Password isn't at least 8 characters long or doesn't contain an" +
+                " uppercase, lowercase letter, unique symbol, or number.");
+            return false;
+        }
+    }
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
-        const success = await login();
-        // Check for any errors -> If none -> Navigate to ?
-        if(success){
-            router.push("/");
-        }
+        validateEmail();
+        validatePassword();
     }
-
     return (
         <div className="">
             <Navbar/>
@@ -85,7 +75,6 @@ export default function LoginForm(){
                             required
                             />
                         </div>
-                        {!validCredentials && <ErrorMsg message={errorMessage}/>}
                         <button
                             type="submit"
                             className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
@@ -94,14 +83,14 @@ export default function LoginForm(){
                         </button>
                     </form>
 
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-4">
                         <Link
-                        href={"/forgotpassword"}
+                        href={"/register"}
                         className="text-sm text-center text-gray-500 "
                         >
-                            <p className="text-blue-500 hover:underline ">Forgot your password?</p>                    
+                            <p className="text-blue-500 hover:underline ">Forgot your password?</p>
+                                            
                         </Link>
-                        
                         <hr className="flex items-center text-sm"/>
 
                         <Link
@@ -109,8 +98,10 @@ export default function LoginForm(){
                         className="text-sm text-center text-gray-500"
                         >
                             <p className="text-blue-500 hover:underline ">Don't have an account? Sign Up</p>
+                        
                         </Link>
                     </div>
+
                 </div>
             </div>
         </div>
