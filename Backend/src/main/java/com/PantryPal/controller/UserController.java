@@ -56,10 +56,10 @@ public class UserController {
 
     @PostMapping("/api/v1/auth/login")
     public ResponseEntity<String> loginUser(@RequestBody UserReqBodyDto userReqBodyDto, HttpServletResponse response){
-// Offset tokenAge from seconds to milliseconds for maxAge property
+    // Offset tokenAge from seconds to milliseconds for maxAge property
         long jwtTokenAgeSecs = jwtTokenAge / 1000;
         if (userRepository.findByEmail(userReqBodyDto.getEmail()).isEmpty()){
-            return new ResponseEntity<>("User not found.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("User not found.", HttpStatus.UNAUTHORIZED);
         }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userReqBodyDto.getEmail(),
@@ -82,11 +82,16 @@ public class UserController {
         }
         catch(BadCredentialsException exception){
             log.info(exception.getMessage());
-            return new ResponseEntity<>("Incorrect Email and Password.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Incorrect Email and Password.", HttpStatus.UNAUTHORIZED);
         }
         catch(Exception exception){
             return new ResponseEntity<>("Unexpected Internal Server Error. Please Try Again Later.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/api/v1/auth/status")
+    public ResponseEntity<String> verifyUser(){
+        return new ResponseEntity<>("User is Logged In.", HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/api/v1/user")
