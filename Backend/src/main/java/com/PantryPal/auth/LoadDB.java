@@ -30,6 +30,7 @@ public class LoadDB {
             PasswordEncoder passwordEncoder = authConfig.passwordEncoder();
             log.info("Preload User 1: {}", userRepository.save(new User("test", passwordEncoder.encode("test"))));
             log.info("Preload User 2: {}", userRepository.save(new User("test@gmail", passwordEncoder.encode("longpasswordtest1"))));
+            log.info("Preload User 3: {}", userRepository.save(new User("test@test", passwordEncoder.encode("test"))));
 
             log.info("Preload Recipe 1: {}", recipeRepository.save(new Recipe(1,"dummy-name", MealType.BREAKFAST,"dummy-ingredients","dummy-instructions")));
             log.info("Preload Recipe 2: {}", recipeRepository.save(new Recipe(1,"dummy-name2", MealType.BREAKFAST,"dummy-ingredients2","dummy-instructions2")));
