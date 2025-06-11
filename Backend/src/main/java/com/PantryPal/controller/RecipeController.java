@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 /** Maybe use Spring Security ALC >> Authenication.get()... for scalability.
- *
+ *  Todos: Update Recipe Controllers to authenticate if recipes correlate to authentication.
  */
 @RestController
 //@RequestMapping("api/v1/recipe")
@@ -46,13 +46,11 @@ public class RecipeController {
         return new ResponseEntity<>(repository.findAllByUserId(userId), HttpStatus.ACCEPTED);
     }
 
-
     @GetMapping("api/v1/recipe/{recipe_id}")
     public ResponseEntity<Recipe> findRecipeByRecipeId(@PathVariable Long recipe_id){
 //        Add a check if it is their own recipe_id
         return buildRecipeResponse(checkValidRecipe(repository.findById(recipe_id)));
     }
-
 
     @PostMapping("api/v1/recipe")
     public ResponseEntity<Recipe> generateRecipe(@RequestBody CreateRecipeReqBodyDto recipeDto) throws GeminiServiceException {
@@ -82,8 +80,6 @@ public class RecipeController {
         Long userId = curUser.getId();
 
         // Restrict Update if given recipe's Ids user_id isn't curUserId
-
-
         Optional<Recipe> optionalRecipe = repository.findById(id);
         if(optionalRecipe.isPresent()){
             // Update Recipe
