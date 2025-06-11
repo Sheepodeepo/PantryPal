@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoutBtn from "./LogoutBtn";
 
 
 export default function Navbar(){
@@ -23,6 +24,8 @@ export default function Navbar(){
                         href={"/login"}>
                         Login
                     </Link>
+
+                    <LogoutBtn/>
                 </div>
 
             </div>
