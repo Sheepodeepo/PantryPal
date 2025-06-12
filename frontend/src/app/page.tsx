@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import PublicHomePage from "./ui/pages/PublicHomePage"
 import UserHomePage from "./ui/pages/UserHomePage";
 import Navbar from "./ui/navbar";
+import { AuthProvider } from "./context/AuthContext";
 
 export default function Home(){
   const [loginStatus, setLoginStatus] = useState(false);
@@ -38,9 +39,12 @@ export default function Home(){
 
 
   return ( 
-    <main className="">
-      <Navbar/> 
-      {loginStatus ? <UserHomePage/> : <PublicHomePage/>}
-    </main>
+    <AuthProvider>
+      <div className="">
+        <Navbar/> 
+        {loginStatus ? <UserHomePage/> : <PublicHomePage/>}
+      </div>
+    </AuthProvider>
+
   )
 }
