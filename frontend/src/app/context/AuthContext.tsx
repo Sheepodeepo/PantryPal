@@ -22,14 +22,11 @@ export function AuthProvider({children }: {children : React.ReactNode }){
             
             if(res.ok){
                 setLoggedIn(true);
-                console.log("User logged in");
                 const data = await res.json();
-                console.log(data);
                 setUser(data);
             }
             else{ //res.status == 403
                 setLoggedIn(false);
-                console.log("User isn't logged in...");
                 setUser(null);
             }
 
@@ -50,10 +47,7 @@ export function AuthProvider({children }: {children : React.ReactNode }){
     },[]);
 
     const login = async (email : string, password: string) => {
-        const responseBody = {
-            "email" : email,
-            "password" : password
-        }
+        const responseBody = { email, password };
 
         try{
             const res = await fetch("http://localhost:8080/api/v1/auth/login",{
@@ -65,23 +59,22 @@ export function AuthProvider({children }: {children : React.ReactNode }){
                 credentials : "include"
             });
             if(res.ok){
-                // setValidCredentials(true);
-                // setErrorMessage("Incorrect Email and/or Password.");
+                console.log("Login Successful");
+                await checkAuth();
                 return true;
             }
             else{
-                // setValidCredentials(false);
-                // setErrorMessage("Incorrect Email and/or Password.");
+                setUser(null);
+                console.log("Login Failed");
                 return false;
             }
         }
         catch(error){
-            
-            // setValidCredentials(false);
-            // setErrorMessage("Internal Server Error Occured. Please try again later.");
+            setUser(null);
+            console.log("Internal Server Error Occured");
+            console.log(error);
+            return false;
         }
-
-        await checkAuth();
     }
 
     const logout = async() => {
@@ -106,7 +99,7 @@ export function AuthProvider({children }: {children : React.ReactNode }){
     }
 
     return (
-        <AuthContext value={{ user, isAuthenticated: !user , loading, login, logout }}>
+        <AuthContext value={{ user, isAuthenticated: !user , login, logout }}>
             {children}
         </AuthContext>
       );
