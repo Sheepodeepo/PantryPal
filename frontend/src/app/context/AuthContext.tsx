@@ -1,9 +1,17 @@
+'use client';
 import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+/** Note: We need to set different status codes based on type of exception.
+ *  Ex: For a 403 or 401 Unauthorized when logging in -> Should set status code to 401.
+ * 
+ * @param param0 
+ * @returns 
+ */
 export function AuthProvider({children }: {children : React.ReactNode }){
     const [user, setUser] = useState(null);
+    const [loggedIn, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
 
     const checkAuth = async () => { 
@@ -11,10 +19,24 @@ export function AuthProvider({children }: {children : React.ReactNode }){
             const res = await fetch("http://localhost:8080/api/v1/auth/status",{
                 credentials: "include",
             })
-            const data = await res.json();
-            setUser(data);
+            
+            if(res.ok){
+                setLoggedIn(true);
+                console.log("User logged in");
+                const data = await res.json();
+                console.log(data);
+                setUser(data);
+            }
+            else{ //res.status == 403
+                setLoggedIn(false);
+                console.log("User isn't logged in...");
+                setUser(null);
+            }
+
         }
         catch(error){
+            setLoggedIn(false);
+            setUser(null);
             console.log("Internal Server Error Occured.");
             console.log(error);
         }
@@ -45,15 +67,16 @@ export function AuthProvider({children }: {children : React.ReactNode }){
             if(res.ok){
                 // setValidCredentials(true);
                 // setErrorMessage("Incorrect Email and/or Password.");
-                // return true;
+                return true;
             }
             else{
                 // setValidCredentials(false);
                 // setErrorMessage("Incorrect Email and/or Password.");
-                // return false;
+                return false;
             }
         }
         catch(error){
+            
             // setValidCredentials(false);
             // setErrorMessage("Internal Server Error Occured. Please try again later.");
         }
@@ -77,22 +100,22 @@ export function AuthProvider({children }: {children : React.ReactNode }){
         catch(error){
             console.log("Internal Server Error Occured");
         }
+        finally{
+            checkAuth();
+        }
     }
 
     return (
-        <AuthContext value={{ user, isAuthenticated: !user, loading, login, logout }}>
-        {children}
-      </AuthContext>
-        // <AuthContext.Provider value={{ user, isAuthenticated: !user, loading, login, logout }}>
-        //   {children}
-        // </AuthContext.Provider>
+        <AuthContext value={{ user, isAuthenticated: !user , loading, login, logout }}>
+            {children}
+        </AuthContext>
       );
 };
 
-export const useAuth = () => useContext(AuthContext);
+// export const useAuth = () => useContext(AuthContext);
 
-// export function useAuth() {
-//     const context = useContext(AuthContext);
-//     if (!context) throw new Error("useAuth must be used within AuthProvider");
-//     return context;
-//   }
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (!context) throw new Error("useAuth must be used within AuthProvider");
+    return context;
+  }
