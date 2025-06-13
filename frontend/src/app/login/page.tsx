@@ -6,6 +6,7 @@ import Button from "../ui/button";
 import { FormEvent, useState } from "react";
 import ErrorMsg from "../ui/errormsg";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginForm(){
     const router = useRouter();
@@ -13,42 +14,11 @@ export default function LoginForm(){
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState("Incorrect Email and/or Password.");
     const [validCredentials, setValidCredentials] = useState(true);
-
-    const login = async () => {
-        const responseBody = {
-            "email" : email,
-            "password" : password
-        }
-
-        try{
-            const res = await fetch("http://localhost:8080/api/v1/auth/login",{
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                  },
-                body : JSON.stringify(responseBody),
-                credentials : "include"
-            });
-            if(res.ok){
-                setValidCredentials(true);
-                setErrorMessage("Incorrect Email and/or Password.");
-                return true;
-            }
-            else{
-                setValidCredentials(false);
-                setErrorMessage("Incorrect Email and/or Password.");
-                return false;
-            }
-        }
-        catch(error){
-            setValidCredentials(false);
-            setErrorMessage("Internal Server Error Occured. Please try again later.");
-        }
-    }
+    const { login } = useAuth();
 
     const handleSubmit = async(e: FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
-        const success = await login();
+        const success = await login(email, password);
         // Check for any errors -> If none -> Navigate to ?
         if(success){
             router.push("/");
