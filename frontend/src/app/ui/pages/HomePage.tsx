@@ -1,8 +1,13 @@
 import Navbar from "@/app/ui/navbar";
 import Link from "next/link";
 import { HiArrowRight } from 'react-icons/hi2';
+import { useAuth } from "@/app/context/AuthContext";
 
-export default function PublicHomePage(){
+export default function HomePage(){
+  // const { isAuthenticated } = useAuth();
+  // console.log(isAuthenticated);
+
+
   return ( 
     <>
         <div className="relative bg-[url('/images/1920.jpg')] bg-cover flex flex-col items-center justify-center w-auto h-screen">
