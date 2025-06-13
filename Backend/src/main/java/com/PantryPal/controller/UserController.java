@@ -1,5 +1,7 @@
 package com.PantryPal.controller;
+import com.PantryPal.auth.MyUserDetails;
 import com.PantryPal.dto.UserReqBodyDto;
+import com.PantryPal.dto.UserResBodyDto;
 import com.PantryPal.model.User;
 import com.PantryPal.repository.UserRepository;
 import com.PantryPal.auth.AppUserDetailService;
@@ -15,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,8 +93,9 @@ public class UserController {
     }
 
     @GetMapping("/api/v1/auth/status")
-    public ResponseEntity<String> verifyUser(){
-        return new ResponseEntity<>("User is Logged In.", HttpStatus.ACCEPTED);
+    public ResponseEntity<UserResBodyDto> verifyUser(){
+        MyUserDetails curUser = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<>(new UserResBodyDto(curUser.getUsername()), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/api/v1/user")
