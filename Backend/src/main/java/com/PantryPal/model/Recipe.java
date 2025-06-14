@@ -26,22 +26,11 @@ public class Recipe {
         this.ingredients = ingredients;
         this.mealType = mealType;
         this.name = name;
-    }
-
-    public Recipe(String name, MealType mealType, String ingredients, String instructions) {
-        this.name = name;
-        this.mealType = mealType;
-        this.ingredients = ingredients;
-        this.instructions = instructions;
         this.createdDate = LocalDate.now();
     }
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public LocalDate getUpdatedDate() {
@@ -54,10 +43,6 @@ public class Recipe {
 
     public LocalDate getCreatedDate() {
         return createdDate;
-    }
-
-    public void setCreatedDate(LocalDate createdDate) {
-        this.createdDate = createdDate;
     }
 
     public String getInstructions() {
@@ -94,10 +79,6 @@ public class Recipe {
 
     public long getUserId() {
         return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
 }
