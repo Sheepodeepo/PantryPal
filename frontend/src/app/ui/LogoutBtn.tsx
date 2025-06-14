@@ -2,22 +2,6 @@ import { useAuth } from "../context/AuthContext";
 
 export default function LogoutBtn(){
     const { logout } = useAuth();
-    const handeLogout = async() => {
-        try{
-            const res = await fetch("http://localhost:8080/api/v1/auth/logout",{
-
-            });
-            if(res.ok){
-                console.log("Logout Successful");
-            }
-            else{
-                console.log("Logout Failed");
-            }
-        }
-        catch(error){
-            console.log("Internal Server Error Occured");
-        }
-    }
 
     return (
         <>
