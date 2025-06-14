@@ -54,6 +54,9 @@ public class RecipeController {
 
     @PostMapping("api/v1/recipe")
     public ResponseEntity<Recipe> generateRecipe(@RequestBody CreateRecipeReqBodyDto recipeDto) throws GeminiServiceException {
+        MyUserDetails curUser = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = curUser.getId();
+
         String recipeMealTypeStr = recipeDto.getMealType().toUpperCase();
         MealType recipeMealType = MealType.valueOf(recipeMealTypeStr);
         String userIngredients = recipeDto.getRecipeIngredients();
@@ -67,7 +70,7 @@ public class RecipeController {
         String recipeIngredients = stripRecipeDetailsFromParsedString(parsedStr,1);
         String recipeInstructions = stripRecipeDetailsFromParsedString(parsedStr, 2);
 
-        Recipe newRecipe = new Recipe(recipeName, recipeMealType, recipeIngredients, recipeInstructions);
+        Recipe newRecipe = new Recipe(userId, recipeName, recipeMealType, recipeIngredients, recipeInstructions);
         repository.save(newRecipe);
         return buildRecipeResponse(newRecipe);
     }
@@ -80,6 +83,7 @@ public class RecipeController {
         Long userId = curUser.getId();
 
         // Restrict Update if given recipe's Ids user_id isn't curUserId
+
         Optional<Recipe> optionalRecipe = repository.findById(id);
         if(optionalRecipe.isPresent()){
             // Update Recipe
@@ -91,7 +95,6 @@ public class RecipeController {
             curRecipe.setUpdatedDate(LocalDate.now());
             return buildRecipeResponse(curRecipe);
         }
-        updatedRecipe.setCreatedDate(LocalDate.now());
         updatedRecipe.setUpdatedDate(LocalDate.now());
         return buildRecipeResponse(updatedRecipe);
     }
