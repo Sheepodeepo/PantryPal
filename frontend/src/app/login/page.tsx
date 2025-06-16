@@ -23,6 +23,9 @@ export default function LoginForm(){
         if(success){
             router.push("/");
         }
+        else{
+            setValidCredentials(false);
+        }
     }
 
     return (
