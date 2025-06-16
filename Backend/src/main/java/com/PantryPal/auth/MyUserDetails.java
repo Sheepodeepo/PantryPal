@@ -30,13 +30,7 @@ public class MyUserDetails implements UserDetails {
         this.id = user.getId();
         this.email = user.getEmail();
         this.password = user.getPassword();
-        // Assuming roles are stored in UserEntity, e.g., as a Set<String>
         this.authorities = Collections.emptyList();
-//        this.authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")); // Example role
-        // Or if your UserEntity has roles:
-        // this.authorities = userEntity.getRoles().stream()
-        //                       .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-        //                       .collect(Collectors.toList());
     }
 
     public Long getId(){
