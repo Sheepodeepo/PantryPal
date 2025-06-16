@@ -6,6 +6,9 @@ const AuthContext = createContext<AuthContextType | null>(null);
 /** Note: We need to set different status codes based on type of exception.
  *  Ex: For a 403 or 401 Unauthorized when logging in -> Should set status code to 401.
  * 
+ * https://chatgpt.com/c/684f7247-48a8-8010-b5d0-834b595a7b94 -> Add Loading state for Navbar, HomePage (ALL Components
+ * that depend on authentication)
+ * 
  * @param param0 
  * @returns 
  */
@@ -60,6 +63,7 @@ export function AuthProvider({children }: {children : React.ReactNode }){
             });
             if(res.ok){
                 console.log("Login Successful");
+                
                 await checkAuth();
                 return true;
             }
@@ -99,13 +103,11 @@ export function AuthProvider({children }: {children : React.ReactNode }){
     }
 
     return (
-        <AuthContext value={{ user, isAuthenticated: !user , login, logout }}>
+        <AuthContext value={{ user, isAuthenticated: (user != null) , loading, login, logout }}>
             {children}
         </AuthContext>
       );
 };
-
-// export const useAuth = () => useContext(AuthContext);
 
 export function useAuth() {
     const context = useContext(AuthContext);
