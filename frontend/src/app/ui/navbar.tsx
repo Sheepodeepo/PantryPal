@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import LogoutBtn from "./LogoutBtn";
 import { useAuth } from "../context/AuthContext";
@@ -16,6 +18,10 @@ export default function Navbar(){
                 </Link>
                 { isAuthenticated ? 
                     <>
+                        <LogoutBtn/>
+                    </>       
+                    :
+                    <>
                         <div className="flex grow justify-end px-4">       
                             <Link 
                                 className="px-4"
@@ -29,8 +35,6 @@ export default function Navbar(){
                             </Link>
                         </div>
                     </>
-                    : 
-                    <LogoutBtn/>
                 }
 
             </div>
