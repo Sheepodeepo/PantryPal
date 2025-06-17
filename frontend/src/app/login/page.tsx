@@ -78,7 +78,7 @@ export default function LoginForm(){
                         <hr className="flex items-center text-sm"/>
 
                         <Link
-                        href={"/register"}
+                        href={"/signup"}
                         className="text-sm text-center text-gray-500"
                         >
                             <p className="text-blue-500 hover:underline ">Don't have an account? Sign Up</p>
