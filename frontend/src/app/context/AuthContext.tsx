@@ -81,6 +81,31 @@ export function AuthProvider({children }: {children : React.ReactNode }){
         }
     }
 
+    const signup = async(email : string, password: string) =>{
+        try{
+            const res = await fetch("http://localhost:8080/api/v1/auth/signup",{
+                method : "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                  },
+                body : JSON.stringify({email, password}),
+
+            });
+            if(res.ok){
+                return true;
+            }
+            else if(res.status==409){
+                return false;
+            }
+            return false;
+        }
+        catch(error){
+            console.log("Internal Server Error Occured");
+            console.log(error);
+            return false;
+        }
+    }
+
     const logout = async() => {
         try{
             const res = await fetch("http://localhost:8080/api/v1/auth/logout",{
@@ -103,7 +128,7 @@ export function AuthProvider({children }: {children : React.ReactNode }){
     }
 
     return (
-        <AuthContext value={{ user, isAuthenticated: (user != null) , loading, login, logout }}>
+        <AuthContext value={{ user, isAuthenticated: (user != null) , loading, login, signup, logout }}>
             {children}
         </AuthContext>
       );
