@@ -25,7 +25,7 @@ export default function Navbar(){
                         <div className="flex grow justify-end px-4">       
                             <Link 
                                 className="px-4"
-                                href={"/register"}>
+                                href={"/signup"}>
                                 Register 
                             </Link>
                             <Link 
