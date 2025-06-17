@@ -48,7 +48,7 @@ public class UserController {
         this.myUserDetailService = myUserDetailService;
     }
 
-    @PostMapping("/api/v1/auth/register")
+    @PostMapping("/api/v1/auth/signup")
     public ResponseEntity<String> registerUser(@RequestBody UserReqBodyDto userReqBodyDto){
         if(userRepository.findByEmail(userReqBodyDto.getEmail()).isPresent()){
             return new ResponseEntity<>("User with the email already exists.", HttpStatus.CONFLICT);

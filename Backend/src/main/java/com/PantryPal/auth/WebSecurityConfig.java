@@ -44,7 +44,7 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/test/**").permitAll()
-                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll()
+                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup").permitAll()
                         .anyRequest().authenticated()
                 )
                 // May want to require authentication to prevent non-users/authors from pinging the logout request too much
