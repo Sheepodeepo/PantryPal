@@ -28,8 +28,8 @@ public class LoadDB {
     CommandLineRunner preLoadDB(RecipeRepository recipeRepository, UserRepository userRepository){
         return args -> {
             PasswordEncoder passwordEncoder = authConfig.passwordEncoder();
-            User u1 = userRepository.save(new User("test", passwordEncoder.encode("test")));
-            User u2 = userRepository.save(new User("test@gmail", passwordEncoder.encode("longpasswordtest1")));
+            User u1 = userRepository.save(new User("john@example.com", passwordEncoder.encode("password123")));
+            User u2 = userRepository.save(new User("jane@example.com", passwordEncoder.encode("password456")));
             User u3 = userRepository.save(new User("test@test", passwordEncoder.encode("test")));
             log.info("Preload User 1: {}", u1);
             log.info("Preload User 2: {}", u2);
