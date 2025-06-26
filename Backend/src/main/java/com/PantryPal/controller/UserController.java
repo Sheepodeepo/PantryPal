@@ -1,11 +1,14 @@
 package com.PantryPal.controller;
 import com.PantryPal.auth.MyUserDetails;
+import com.PantryPal.dto.LoginUserRequest;
+import com.PantryPal.dto.RecipeDto;
 import com.PantryPal.dto.UserReqBodyDto;
 import com.PantryPal.dto.UserResBodyDto;
 import com.PantryPal.model.User;
 import com.PantryPal.repository.UserRepository;
 import com.PantryPal.auth.AppUserDetailService;
 import com.PantryPal.auth.JwtService;
+import com.PantryPal.service.FavoriteService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -47,30 +51,29 @@ public class UserController {
         this.jwtService = jwtService;
         this.myUserDetailService = myUserDetailService;
     }
-
     @PostMapping("/api/v1/auth/signup")
     public ResponseEntity<String> registerUser(@RequestBody UserReqBodyDto userReqBodyDto){
         if(userRepository.findByEmail(userReqBodyDto.getEmail()).isPresent()){
             return new ResponseEntity<>("User with the email already exists.", HttpStatus.CONFLICT);
         }
-        User user = new User(userReqBodyDto.getEmail(), passwordEncoder.encode(userReqBodyDto.getPassword()));
+        User user = new User(userReqBodyDto.getName(), userReqBodyDto.getEmail(), passwordEncoder.encode(userReqBodyDto.getPassword()));
         return new ResponseEntity<>("Created User successfully.", HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/api/v1/auth/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserReqBodyDto userReqBodyDto, HttpServletResponse response){
+    public ResponseEntity<String> loginUser(@RequestBody LoginUserRequest loginUserRequest, HttpServletResponse response){
     // Offset tokenAge from seconds to milliseconds for maxAge property
         long jwtTokenAgeSecs = jwtTokenAge / 1000;
-        if (userRepository.findByEmail(userReqBodyDto.getEmail()).isEmpty()){
+        if (userRepository.findByEmail(loginUserRequest.getEmail()).isEmpty()){
             return new ResponseEntity<>("User not found.", HttpStatus.UNAUTHORIZED);
         }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                userReqBodyDto.getEmail(),
-                userReqBodyDto.getPassword()
+                loginUserRequest.getEmail(),
+                loginUserRequest.getPassword()
         ));
 
         try{
-            String jwtToken = jwtService.generateToken(myUserDetailService.loadUserByUsername(userReqBodyDto.getEmail()));
+            String jwtToken = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginUserRequest.getEmail()));
             ResponseCookie responseCookie = ResponseCookie
                     .from("JWT",jwtToken)
                     .secure(true)
@@ -80,7 +83,7 @@ public class UserController {
                     .maxAge(jwtTokenAgeSecs)
                     .build();
             response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-            User user = userRepository.findByEmail(userReqBodyDto.getEmail()).get();
+            User user = userRepository.findByEmail(loginUserRequest.getEmail()).get();
             return new ResponseEntity<>("Login Successful.", HttpStatus.ACCEPTED);
         }
         catch(BadCredentialsException exception){
@@ -128,15 +131,15 @@ public class UserController {
         return new ResponseEntity<>("User deleted.",HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/api/v1/user")
-    public ResponseEntity<String> deleteUserByEmail(@RequestParam String email){
-        User curUser = checkValidUser(userRepository.findByEmail(email));
-        if(curUser == null){
-            return new ResponseEntity<>("User not found.",HttpStatus.ACCEPTED);
-        }
-
-        userRepository.deleteByEmail(email);
-        return new ResponseEntity<>("User deleted.",HttpStatus.ACCEPTED);    }
+//    @DeleteMapping("/api/v1/user")
+//    public ResponseEntity<String> deleteUserByEmail(@RequestParam String email){
+//        User curUser = checkValidUser(userRepository.findByEmail(email));
+//        if(curUser == null){
+//            return new ResponseEntity<>("User not found.",HttpStatus.ACCEPTED);
+//        }
+//
+//        userRepository.deleteByEmail(email);
+//        return new ResponseEntity<>("User deleted.",HttpStatus.ACCEPTED);    }
 
     private User checkValidUser(Optional<User> optionalUser){
         return optionalUser.orElse(null);
