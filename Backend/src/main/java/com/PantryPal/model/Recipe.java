@@ -5,7 +5,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 
-@Table("recipe")
+@Table("recipes")
 public class Recipe {
     @Id
     private long id;
@@ -14,6 +14,7 @@ public class Recipe {
     private MealType mealType;
     private String ingredients;
     private String instructions;
+    private long favorite_count;
     private LocalDate createdDate;
     private LocalDate updatedDate;
 
@@ -26,6 +27,7 @@ public class Recipe {
         this.ingredients = ingredients;
         this.mealType = mealType;
         this.name = name;
+        favorite_count = 0;
         this.createdDate = LocalDate.now();
     }
 
@@ -81,4 +83,11 @@ public class Recipe {
         return userId;
     }
 
+    public long getFavorite_count() {
+        return favorite_count;
+    }
+
+    public void setFavorite_count(long favorite_count) {
+        this.favorite_count = favorite_count;
+    }
 }

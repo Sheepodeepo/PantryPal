@@ -2,12 +2,15 @@ package com.PantryPal.controller;
 
 import com.PantryPal.auth.MyUserDetails;
 import com.PantryPal.dto.CreateRecipeReqBodyDto;
+import com.PantryPal.dto.RecipeDto;
 import com.PantryPal.exceptions.GeminiServiceException;
 import com.PantryPal.model.MealType;
 import com.PantryPal.model.Recipe;
 import com.PantryPal.repository.RecipeRepository;
 import com.PantryPal.service.AIService;
+import com.PantryPal.service.FavoriteService;
 import com.PantryPal.service.RecipePromptService;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cglib.core.Local;
@@ -32,11 +35,41 @@ public class RecipeController {
     private final AIService aiService;
     private final RecipeRepository repository;
     private final RecipePromptService recipePromptService;
+    private final FavoriteService favoriteService;
 
-    public RecipeController(RecipeRepository repository, AIService aiService, RecipePromptService recipePromptService) {
+    public RecipeController(RecipeRepository repository, AIService aiService, RecipePromptService recipePromptService, FavoriteService favoriteService) {
         this.repository = repository;
         this.aiService = aiService;
         this.recipePromptService = recipePromptService;
+        this.favoriteService = favoriteService;
+    }
+
+    @PostMapping("/api/v1/recipe/favorite")
+    public ResponseEntity<String> addFavoriteRecipe(@RequestBody RecipeDto recipeDto){
+        MyUserDetails curUser = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = curUser.getId();
+        favoriteService.addFavorite(userId, recipeDto.getRecipeId());
+        return ResponseEntity.ok("Recipe added to favorites");
+    }
+
+    @GetMapping("/api/v1/recipe/favorite/top3")
+    public ResponseEntity<List<Recipe>> getTopThreeMostFavoriteRecipes(){
+        return new ResponseEntity<>(favoriteService.getTopFavoriteRecipes(3), HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/api/v1/recipe/favorite")
+    public ResponseEntity<List<Recipe>> getUserFavoriteRecipes(){
+        MyUserDetails curUser = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = curUser.getId();
+        List<Recipe> recipeLst = favoriteService.getUserFavorites(userId);
+        return new ResponseEntity<>(recipeLst, HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("api/v1/recipe/favorite")
+    public void removeFavoriteRecipe(@RequestBody RecipeDto recipeDto){
+        MyUserDetails curUser = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = curUser.getId();
+        favoriteService.removeFavorite(userId, recipeDto.getRecipeId());
     }
 
     @GetMapping("/api/v1/recipe")
