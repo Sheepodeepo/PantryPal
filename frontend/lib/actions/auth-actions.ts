@@ -1,6 +1,5 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { users } from "@/lib/data"
 
@@ -25,99 +24,84 @@ type AuthResult = {
 
 // Simple in-memory user storage for demo purposes
 // In a real app, you would use a database
-const registeredUsers = [...users]
-
 export async function login(data: LoginData): Promise<AuthResult> {
-  // Simulate server delay
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  const user = registeredUsers.find((u) => u.email === data.email)
-
-  if (!user) {
-    return { success: false, error: "User not found" }
+  try{
+    const res = await fetch("http://localhost:8080/api/v1/auth/login",{
+      method : "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body : JSON.stringify(data),
+      credentials : "include"      
+    })
+    if(res.status == 401){
+      return {success : false, error : "Email and/or password is incorrect"};
+    }
   }
-
-  if (user.password !== data.password) {
-    return { success: false, error: "Invalid password" }
+  catch(error){
+    console.log("Login: Internal Servor Error Debug Message");
+    console.log(error);
+    return {success : false, error : "Internal Server Error. Please try again later."};
   }
-
-  // Set auth cookie
-  const cookieStore = cookies()
-  cookieStore.set(
-    "auth-token",
-    JSON.stringify({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-    }),
-    {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: "/",
-    },
-  )
-
-  return { success: true }
+  return {success : true};
 }
 
 export async function signup(data: SignupData): Promise<AuthResult> {
-  // Simulate server delay
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  // Check if user already exists
-  if (registeredUsers.some((u) => u.email === data.email)) {
-    return { success: false, error: "Email already in use" }
+  try{
+    const res = await fetch("http://localhost:8080/api/v1/auth/signup",{
+      method : "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body : JSON.stringify(data)
+    })
+    if(res.status == 409){
+      return {success : false, error : "User with email already exists."};
+    }
   }
-
-  // Create new user
-  const newUser = {
-    id: `user-${Date.now()}`,
-    name: data.name,
-    email: data.email,
-    password: data.password, // In a real app, you would hash this
-    favorites: [],
+  catch(error){
+    console.log("Signup: Internal Servor Error Debug Message");
+    console.log(error);
+    return {success : false, error : "Internal Server Error. Please try again later."};
   }
-
-  registeredUsers.push(newUser)
-
-  // Set auth cookie
-  const cookieStore = cookies()
-  cookieStore.set(
-    "auth-token",
-    JSON.stringify({
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-    }),
-    {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: "/",
-    },
-  )
-
   return { success: true }
 }
 
 export async function logout() {
-  const cookieStore = cookies()
-  cookieStore.delete("auth-token")
-  redirect("/")
+  try{
+    const res = await fetch("http://localhost:8080/api/v1/auth/logout",{
+        credentials : "include",
+    });
+    if(res.ok){
+        console.log("Logout Successful");
+    }
+    else{
+        console.log("Logout Failed");
+    }
+  }
+  catch(error){
+      console.log("Logout: Internal Server Error Occured");
+  }
+  redirect("/");
 }
 
-export async function getCurrentUser() {
-  const cookieStore = cookies()
-  const authCookie = cookieStore.get("auth-token")
+export async function getCurrentUser(){
+  try{
+    const res = await fetch("http://localhost:8080/api/v1/auth/status",{
+        credentials: "include",
+    })
+    if(res.ok){
+      return await res.json();
+    }
 
-  if (!authCookie) {
-    return null
+    else{
+      return null;
+    }
+
   }
-
-  try {
-    return JSON.parse(authCookie.value)
-  } catch (error) {
-    return null
+  catch(error){
+      console.log("Authenticate User: Internal Server Error Occured.");
+      console.log(error);
+      return null;
   }
 }
