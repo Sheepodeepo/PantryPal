@@ -98,7 +98,7 @@ public class UserController {
     @GetMapping("/api/v1/auth/status")
     public ResponseEntity<UserResBodyDto> verifyUser(){
         MyUserDetails curUser = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<>(new UserResBodyDto(curUser.getUsername()), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(new UserResBodyDto(curUser.getId()), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/api/v1/user")

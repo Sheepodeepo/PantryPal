@@ -1,17 +1,30 @@
 package com.PantryPal.dto;
 
 public class UserResBodyDto {
+    public long id;
     public String email;
 
-    public UserResBodyDto(String email) {
-        this.email = email;
+    public UserResBodyDto(long id) {
+        this.id = id;
     }
 
-    public String getEmail() {
-        return email;
+    public long getId() {
+        return id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setId(long id) {
+        this.id = id;
     }
+
+    //    public UserResBodyDto(String email) {
+//        this.email = email;
+//    }
+//
+//    public String getEmail() {
+//        return email;
+//    }
+//
+//    public void setEmail(String email) {
+//        this.email = email;
+//    }
 }

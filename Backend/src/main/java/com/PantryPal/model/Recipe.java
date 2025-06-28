@@ -31,6 +31,10 @@ public class Recipe {
         this.createdDate = LocalDate.now();
     }
 
+    public enum Difficulty{
+        EASY, MEDIUM, HARD
+    }
+
     public long getId() {
         return id;
     }
