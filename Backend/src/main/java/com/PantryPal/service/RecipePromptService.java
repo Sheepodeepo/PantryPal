@@ -14,7 +14,7 @@ public class RecipePromptService {
      */
     public String createGeminiPrompt(MealType mealType, String ingredients){
         StringBuilder promptBuilder = new StringBuilder("Create a ");
-        promptBuilder.append(mealType.getDisplayName()).append(" recipe");
+        promptBuilder.append(mealType).append(" recipe");
 
         if(ingredients != null && !ingredients.isEmpty()){
             promptBuilder.append(" with the ingredients: ").append(ingredients);
