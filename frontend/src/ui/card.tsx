@@ -6,18 +6,6 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-// function Card({ className, ...props }): ComponentProps<'div'> {
-//   return (
-//     <div
-
-//       className={cn(
-//         "rounded-lg border bg-card text-card-foreground shadow-sm",
-//         className
-//       )}
-//       {...props} />
-//   )
-// }
-
 function Card({ className, ...props }: React.ComponentProps<'div'>): React.JSX.Element {
     return (
     <div
