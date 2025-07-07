@@ -32,7 +32,7 @@ export default async function RecipePage({ params} : { params: { id: string }}){
     
       return (
         <>
-            <div className="max-w-4xl mx-auto p-4 h-screen bg-amber-400 md:rounded-xl ">
+            <div className="max-w-4xl mx-auto my-6 py-4 px-8 bg-amber-400 md:rounded-xl">
                 <div className="flex flex-col gap-y-3">
                     <h1 className="text-3xl font-bold">{recipe.name}</h1>
                     <p className="text-gray-600">
