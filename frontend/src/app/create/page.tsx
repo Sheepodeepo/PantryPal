@@ -4,23 +4,35 @@ import type React from "react"
 
 import { useState } from "react"
 // import { Button } from "@/components/ui/button"
-// import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-// import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/ui/card"
+import { Label } from "@/ui/label"
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 // import { Textarea } from "@/components/ui/textarea"
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectGroup,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select"
 import { LuChefHat, LuClock, LuUsers } from "react-icons/lu"
-// "react-icons/lucide-react"
+import { Textarea } from "@/ui/textarea"
+import { Button } from "@/ui/button"
+import { useRouter } from "next/navigation"
 
 export default function GenerateRecipeForm() {
+  const router = useRouter();
   const [ingredients, setIngredients] = useState("")
   const [mealType, setMealType] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [recipe, setRecipe] = useState<{
     name: string
-    description: string
-    prepTime: string
-    servings: string
+    // description: string
+    // prepTime: string
+    // servings: string
+    mealType : string 
     ingredients: string[]
     instructions: string[]
   } | null>(null)
@@ -30,49 +42,81 @@ export default function GenerateRecipeForm() {
     if (!ingredients.trim() || !mealType) return
 
     setIsGenerating(true)
-
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    // Generate a mock recipe based on inputs
-    const mockRecipe = {
-      name: `Delicious ${mealType}`,
-      description: `A wonderful ${mealType.toLowerCase()} made with ${ingredients.split(",")[0]?.trim()} and other fresh ingredients.`,
-      prepTime: mealType === "Breakfast" ? "15 mins" : mealType === "Lunch" ? "25 mins" : "35 mins",
-      servings: "4",
-      ingredients: ingredients
-        .split(",")
-        .map((ing) => ing.trim())
-        .filter((ing) => ing),
-      instructions: [
-        "Prepare all ingredients by washing and chopping as needed.",
-        "Heat a large pan or skillet over medium heat.",
-        "Add the main ingredients and cook according to the meal type.",
-        "Season with salt, pepper, and your favorite spices.",
-        "Cook until everything is tender and flavors are well combined.",
-        "Serve hot and enjoy your homemade meal!",
-      ],
+    
+    const reqBody = {
+      mealType,
+      ingredients
     }
 
-    setRecipe(mockRecipe)
+
+    try {
+      const res = await fetch("http://localhost:8080/api/v1/recipe",{
+        method : "POST",
+        credentials : "include",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body : JSON.stringify(reqBody)
+      });
+      const data = await res.json();
+      console.log(data);
+      const newRecipe = {
+        name : data.name,
+        mealType : data.mealType,
+        ingredients : data.ingredients.split(","),
+        instructions : data.instructions.split("*")
+      }
+      console.log(newRecipe);
+      setRecipe(newRecipe);
+    } catch (error) {
+      console.log("Internal Server Error");
+      console.log(error);
+
+    }
+    // Simulate API call delay
+    // await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    // Generate a mock recipe based on inputs
+
+    // const mockRecipe = {
+    //   name: `Delicious ${mealType}`,
+    //   description: `A wonderful ${mealType.toLowerCase()} made with ${ingredients.split(",")[0]?.trim()} and other fresh ingredients.`,
+    //   prepTime: mealType === "Breakfast" ? "15 mins" : mealType === "Lunch" ? "25 mins" : "35 mins",
+    //   servings: "4",
+    //   ingredients: ingredients
+    //     .split(",")
+    //     .map((ing) => ing.trim())
+    //     .filter((ing) => ing),
+    //   instructions: [
+    //     "Prepare all ingredients by washing and chopping as needed.",
+    //     "Heat a large pan or skillet over medium heat.",
+    //     "Add the main ingredients and cook according to the meal type.",
+    //     "Season with salt, pepper, and your favorite spices.",
+    //     "Cook until everything is tender and flavors are well combined.",
+    //     "Serve hot and enjoy your homemade meal!",
+    //   ],
+    // }
+
+    // setRecipe(mockRecipe)
     setIsGenerating(false)
   }
 
-  const resetForm = () => {
-    setIngredients("")
-    setMealType("")
-    setRecipe(null)
+  const handleReturn = () => {
+    router.push("/");
+    // setIngredients("")
+    // setMealType("")
+    // setRecipe(null)
   }
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto max-w-4xl space-y-6">
+      <div className="mx-auto max-w-4xl py-6">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2"> Generate a Recipe</h1>
           <p className="text-gray-600">Tell us what ingredients you have and what meal you want to make!</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 py-4">
           {/* Input Form */}
           <Card>
             <CardHeader>
@@ -86,42 +130,37 @@ export default function GenerateRecipeForm() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <p >Available Ingredients </p>
-                  <textarea
-                    id="ingredients"
+                  <Textarea 
                     placeholder="Enter ingredients separated by commas (e.g., chicken, rice, broccoli, garlic, onion)"
                     value={ingredients}
                     onChange={(e) => setIngredients(e.target.value)}
-                    className="min-h-[100px]"
-                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="meal-type">Meal Type</Label>
-                  <p> Meal Type </p>
-                  <select value={mealType} onValueChange={setMealType} required>
-
-                  </select>
+                <Label htmlFor="email">Meal Type</Label>
                   <Select value={mealType} onValueChange={setMealType} required>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select meal type" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Breakfast">Breakfast</SelectItem>
-                      <SelectItem value="Lunch">Lunch</SelectItem>
-                      <SelectItem value="Dinner">Dinner</SelectItem>
-                      <SelectItem value="Snack">Snack</SelectItem>
-                      <SelectItem value="Dessert">Dessert</SelectItem>
+                    <SelectContent className="bg-white">
+                      <SelectGroup>
+                        <SelectItem value="Breakfast">Breakfast</SelectItem>
+                        <SelectItem value="Lunch">Lunch</SelectItem>
+                        <SelectItem value="Dinner">Dinner</SelectItem>
+                        <SelectItem value="Snack">Snack</SelectItem>
+                        {/* <SelectItem value="Dessert">Dessert</SelectItem> */}
+                      </SelectGroup>
                     </SelectContent>
-                  </Select>
+                  </Select> 
                 </div>
               </CardContent>
               <CardFooter className="flex gap-2">
                 <Button type="submit" disabled={isGenerating || !ingredients.trim() || !mealType} className="flex-1">
-                  {isGenerating ? "Generating Recipe..." : "Generate Recipe"}
+                  {isGenerating ? "Generating Recipe..." : "Generate Another Recipe"}
                 </Button>
                 {recipe && (
-                  <Button type="button" variant="outline" onClick={resetForm}>
-                    New Recipe
+                  <Button type="button" variant="outline" onClick={handleReturn}>
+                    Save and Return
                   </Button>
                 )}
               </CardFooter>
@@ -146,10 +185,10 @@ export default function GenerateRecipeForm() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900">{recipe.name}</h3>
-                    <p className="text-gray-600 mt-1">{recipe.description}</p>
+                    {/* <p className="text-gray-600 mt-1">{recipe.description}</p> */}
                   </div>
 
-                  <div className="flex gap-4 text-sm text-gray-500">
+                  {/* <div className="flex gap-4 text-sm text-gray-500">
                     <div className="flex items-center gap-1">
                       <LuClock className="h-4 w-4" />
                       {recipe.prepTime}
@@ -158,7 +197,7 @@ export default function GenerateRecipeForm() {
                       <LuUsers className="h-4 w-4" />
                       Serves {recipe.servings}
                     </div>
-                  </div>
+                  </div> */}
 
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Ingredients:</h4>

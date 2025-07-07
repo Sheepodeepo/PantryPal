@@ -3,32 +3,52 @@ import { useAuth } from "@/lib/actions/AuthContext";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiArrowRight } from "react-icons/hi2";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/ui/dropdown-menu"
 
 export default function Home(){
   const { isAuthenticated, loading } = useAuth();
   const [ recipes, setRecipes] = useState([]);
 
-  useEffect(() => {
-    
-    const fetchRecipes = async () => {
-      try{
-        const res = await fetch("http://localhost:8080/api/v1/recipe",{
-          credentials : "include",
-        })
-        const recipeData = await res.json();
-        setRecipes(recipeData);
-      }
-      catch(error){
-        console.log(error);
-      }
+  const fetchRecipes = async () => {
+    try{
+      const res = await fetch("http://localhost:8080/api/v1/recipe",{
+        credentials : "include",
+      })
+      const recipeData = await res.json();
+      setRecipes(recipeData);
     }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
     if(isAuthenticated){
       fetchRecipes();
     }
   }, [isAuthenticated]);
 
-  // 👇 Add this early return
+  const handleDeleteRecipe = async(recipeId : string) => {    
+    try {
+      const res = await fetch(`http://localhost:8080/api/v1/recipe/${recipeId}`,{
+        method : "DELETE",
+        credentials : "include",
+      })
+      fetchRecipes();
+    } catch (error) {
+        console.log("Internal Server Error Occured.");
+        console.log(error);
+    }
+  }
 
+  // 👇 Add this early return
   //Condition should be loading -> Create a skeleton UI (NextJs thingy with fancy tailwind css to mock loading objects)
   //Skeleton UI
   if (loading) {
@@ -48,11 +68,29 @@ export default function Home(){
                 {recipes.map((recipe : any) => (
                   
                   <div key={recipe.id} className="flex flex-col mx-6 md:mx-0 gap-y-1 p-4 border rounded-lg bg-amber-400 shadow">
-                    <Link
-                      href={`/recipe/${recipe.id}`}
-                    >
-                      <h2 className="text-lg md:text-2xl font-bold">{recipe.name}</h2>
-                    </Link>
+                    <div className="flex justify-between">
+                      <Link
+                        href={`/recipe/${recipe.id}`}
+                      >
+                        <h2 className="text-lg md:text-2xl font-bold">{recipe.name}</h2>
+                      </Link>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <span className="px-4 text-xl">...</span>
+
+                        </DropdownMenuTrigger>
+      
+                        <DropdownMenuContent>
+                          <DropdownMenuItem>
+                            <button onClick={() => {handleDeleteRecipe(recipe.id)}}>
+                              Delete  
+                            </button> 
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                     </DropdownMenu>
+                    </div>
+
                     <p className="text-md italic"> Ingredients</p>
                     <p className="text-sm">{recipe.ingredients} </p>
 
