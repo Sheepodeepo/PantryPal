@@ -20,7 +20,7 @@ public class RecipePromptService {
             promptBuilder.append(" with the ingredients: ").append(ingredients);
         }
 
-        promptBuilder.append(" in the format:<#Title: #Ingredients: #Instructions: . Use commas to separate the list of ingredients and instructions.>");
+        promptBuilder.append(" in the format:<#Title: #Ingredients: #Instructions: . Use commas to separate the list of ingredients. Use * to separate each line of instruction. Don't include ** in any part of the returned recipe.>");
         return promptBuilder.toString();
     }
 }
