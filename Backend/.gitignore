@@ -38,3 +38,6 @@ out/
 
 ### Hide Certains codes
 src/main/resources/schema.sql
+
+### Hide production properties
+src/main/resources/application-prod.properties
