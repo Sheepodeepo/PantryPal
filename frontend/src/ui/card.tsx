@@ -2,9 +2,9 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  className?: string;
-}
+// interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+//   className?: string;
+// }
 
 function Card({ className, ...props }: React.ComponentProps<'div'>): React.JSX.Element {
     return (
