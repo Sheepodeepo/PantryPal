@@ -3,7 +3,7 @@ import { geist } from "@/style/fonts";
 import Footer from "@/components/footer";
 import "@/style/global.css";
 import Navbar from "@/components/navbar";
-import { ThemeProvider } from "@/components/theme-provider";
+// import { ThemeProvider } from "@/components/theme-provider";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

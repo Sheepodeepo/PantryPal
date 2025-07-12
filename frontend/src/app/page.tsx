@@ -7,10 +7,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  // DropdownMenuLabel,
+  // DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu"
+import { Recipe } from "@/lib/types";
 
 export default function Home(){
   const { isAuthenticated, loading } = useAuth();
@@ -35,9 +36,9 @@ export default function Home(){
     }
   }, [isAuthenticated]);
 
-  const handleDeleteRecipe = async(recipeId : string) => {    
+  const handleDeleteRecipe = async(recipeId : number) => {    
     try {
-      const res = await fetch(`http://localhost:8080/api/v1/recipe/${recipeId}`,{
+      await fetch(`http://localhost:8080/api/v1/recipe/${recipeId}`,{
         method : "DELETE",
         credentials : "include",
       })
@@ -65,7 +66,7 @@ export default function Home(){
           //User Home Page
           <>
             <div className="flex flex-col gap-y-4 py-4 max-w-4xl mx-auto min-h-16 ">
-                {recipes.map((recipe : any) => (
+                {recipes.map((recipe : Recipe) => (
                   
                   <div key={recipe.id} className="flex flex-col mx-6 md:mx-0 gap-y-1 p-4 border rounded-lg bg-amber-400 shadow">
                     <div className="flex justify-between">

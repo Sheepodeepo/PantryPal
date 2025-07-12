@@ -1,24 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-// import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/ui/card"
 import { Label } from "@/ui/label"
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-// import { Textarea } from "@/components/ui/textarea"
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectGroup,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select"
-import { LuChefHat, LuClock, LuUsers } from "react-icons/lu"
+import { Select, SelectContent, SelectItem, SelectGroup, SelectTrigger, SelectValue } from "@/ui/select"
 import { Textarea } from "@/ui/textarea"
+import { LuChefHat } from "react-icons/lu" //LuClock, LuUsers 
 import { Button } from "@/ui/button"
 import { useRouter } from "next/navigation"
 
@@ -50,7 +38,7 @@ export default function GenerateRecipeForm() {
 
 
     try {
-      const res = await fetch("http://localhost:8080/api/v1/recipe",{
+      const res = await fetch(`http://localhost:8080/api/v1/recipe`,{
         method : "POST",
         credentials : "include",
         headers: {
@@ -73,39 +61,11 @@ export default function GenerateRecipeForm() {
       console.log(error);
 
     }
-    // Simulate API call delay
-    // await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    // Generate a mock recipe based on inputs
-
-    // const mockRecipe = {
-    //   name: `Delicious ${mealType}`,
-    //   description: `A wonderful ${mealType.toLowerCase()} made with ${ingredients.split(",")[0]?.trim()} and other fresh ingredients.`,
-    //   prepTime: mealType === "Breakfast" ? "15 mins" : mealType === "Lunch" ? "25 mins" : "35 mins",
-    //   servings: "4",
-    //   ingredients: ingredients
-    //     .split(",")
-    //     .map((ing) => ing.trim())
-    //     .filter((ing) => ing),
-    //   instructions: [
-    //     "Prepare all ingredients by washing and chopping as needed.",
-    //     "Heat a large pan or skillet over medium heat.",
-    //     "Add the main ingredients and cook according to the meal type.",
-    //     "Season with salt, pepper, and your favorite spices.",
-    //     "Cook until everything is tender and flavors are well combined.",
-    //     "Serve hot and enjoy your homemade meal!",
-    //   ],
-    // }
-
-    // setRecipe(mockRecipe)
     setIsGenerating(false)
   }
 
   const handleReturn = () => {
     router.push("/");
-    // setIngredients("")
-    // setMealType("")
-    // setRecipe(null)
   }
 
   return (
@@ -220,7 +180,8 @@ export default function GenerateRecipeForm() {
               ) : (
                 <div className="text-center py-8 text-gray-400">
                   <LuChefHat className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>Fill out the form and click "Generate Recipe" to see your custom recipe here</p>
+                  <p>Fill out the form and click Generate Recipe to see your custom recipe here</p> 
+                  {/* "Generate Recipe" */}
                 </div>
               )}
             </CardContent>
