@@ -3,6 +3,7 @@ import { geist } from "@/style/fonts";
 import Footer from "@/components/footer";
 import "@/style/global.css";
 import Navbar from "@/components/navbar";
+import { Analytics } from "@vercel/analytics/next"
 // import { ThemeProvider } from "@/components/theme-provider";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AuthProvider>
             <Navbar/>
             {children}
+            <Analytics />
             <Footer/>
           </AuthProvider>
         {/* </ThemeProvider> */}
