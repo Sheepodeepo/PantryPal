@@ -1,20 +1,11 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from "react";
+import { User, AuthContextType } from "@/lib/types";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-/** Note: We need to set different status codes based on type of exception.
- *  Ex: For a 403 or 401 Unauthorized when logging in -> Should set status code to 401.
- * 
- * https://chatgpt.com/c/684f7247-48a8-8010-b5d0-834b595a7b94 -> Add Loading state for Navbar, HomePage (ALL Components
- * that depend on authentication)
- * 
- * @param param0 
- * @returns 
- */
 export function AuthProvider({children }: {children : React.ReactNode }){
-    const [user, setUser] = useState(null);
-    const [loggedIn, setLoggedIn] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
     const checkAuth = async () => { 
@@ -24,18 +15,16 @@ export function AuthProvider({children }: {children : React.ReactNode }){
             })
             
             if(res.ok){
-                setLoggedIn(true);
                 const data = await res.json();
                 setUser(data);
             }
             else{ //res.status == 403
-                setLoggedIn(false);
                 setUser(null);
             }
 
         }
         catch(error){
-            setLoggedIn(false);
+            // setLoggedIn(false);
             setUser(null);
             console.log("Internal Server Error Occured.");
             console.log(error);
@@ -121,6 +110,7 @@ export function AuthProvider({children }: {children : React.ReactNode }){
         }
         catch(error){
             console.log("Internal Server Error Occured");
+            console.log(error);
         }
         finally{
             checkAuth();

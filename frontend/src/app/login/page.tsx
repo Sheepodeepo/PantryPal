@@ -10,7 +10,7 @@ export default function LoginForm(){
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState("Incorrect Email and/or Password.");
+    const errorMessage = "Incorrect Email and/or Password.";
     const [validCredentials, setValidCredentials] = useState(true);
     const { login } = useAuth();
 
@@ -63,20 +63,20 @@ export default function LoginForm(){
                 </form>
 
                 <div className="flex flex-col gap-2">
-                    <Link
+                    {/* <Link
                     href={"/forgotpassword"}
                     className="text-sm text-center text-gray-500 "
                     >
                         <p className="text-blue-500 hover:underline ">Forgot your password?</p>                    
                     </Link>
                     
-                    <hr className="flex items-center text-sm"/>
+                    <hr className="flex items-center text-sm"/> */}
 
                     <Link
                     href={"/signup"}
                     className="text-sm text-center text-gray-500"
                     >
-                        <p className="text-blue-500 hover:underline ">Don't have an account? Sign Up</p>
+                        <p className="text-blue-500 hover:underline ">Don&apos;t have an account? Sign Up</p>
                     </Link>
                 </div>
             </div>

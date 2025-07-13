@@ -1,11 +1,10 @@
-import { useParams, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
+import { Recipe } from "@/lib/types";
 
-
-
-export default async function RecipePage({ params} : { params: { id: string }}){
-    const {id} = params;
+export default async function RecipePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     let recipe: Recipe | null = null;
     const cookieHeader = cookies().toString();
 
@@ -22,13 +21,12 @@ export default async function RecipePage({ params} : { params: { id: string }}){
         recipe = await res.json();
     }
     catch(error){
-        console.log("Internal Server Error");
-        console.log(error);
-        // notFound();
+        console.log("Internal Server Error", error);
+        notFound();
     }
     
 
-    if (!recipe) return null; // safety fallback
+    if (recipe == null) return null; // safety fallback
     
       return (
         <>

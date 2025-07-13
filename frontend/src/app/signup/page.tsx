@@ -70,6 +70,7 @@ export default function SignupPage(){
         else{
             setIsError(false);
             setErrorMsg('');
+            router.push("/login");
         }
     }
 
