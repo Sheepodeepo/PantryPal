@@ -15,3 +15,6 @@ ___
 * Go to Git Bash or any Unix/Linux Terminal
 * Set all environmental variables in application-test.properties with ```export ENV=ENV_VAR```
 * ```./gradlew build``` 
+
+### Add Dependencies to Gradlew Wrapper
+* https://stackoverflow.com/questions/36923288/how-to-run-bootrun-with-spring-profile-via-gradle-task/57890208#57890208
