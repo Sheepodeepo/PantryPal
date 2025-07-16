@@ -2,6 +2,14 @@ HELP.md
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
+
+### Hide Certains codes
+src/main/resources/schema.sql
+
+### Hide production properties
+src/main/resources/application-prod.properties
+src/main/resources/application-dev.properties
+
 !**/src/main/**/build/
 !**/src/test/**/build/
 
@@ -36,12 +44,6 @@ out/
 #### VS Code ###
 .vscode/
 
-### Hide Certains codes
-src/main/resources/schema.sql
-
-### Hide production properties
-./src/main/resources/application-prod.properties
-./src/main/resources/application-dev.properties
 
 ### Hide Environmental variables
 .env**
