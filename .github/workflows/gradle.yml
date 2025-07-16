@@ -5,7 +5,7 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Java CI with Gradle
+name: Java CI with Gradle on localhost
 
 on:
   push:
@@ -45,25 +45,8 @@ jobs:
     - name: Build with Gradle Wrapper
       env: 
         API_KEY: ${{ secrets.API_KEY }}
-        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        JDBC_URL: ${{ secrets.LOCAL_JDBC_URL }}
+        POSTGRES_USER: ${{ secrets.LOCAL_POSTGRES_USER }} 
+        POSTGRES_PASSWORD: ${{ secrets.LOCAL_POSTGRES_PASSWORD }}
         JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       run: ./gradlew build 
-
-  # dependency-submission:
-
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: write
-
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Set up JDK 21
-  #     uses: actions/setup-java@v4
-  #     with:
-  #       java-version: '21'
-  #       distribution: 'temurin'
-
-  #   # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
-  #   # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
-  #   - name: Generate and submit dependency graph
-  #     uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
