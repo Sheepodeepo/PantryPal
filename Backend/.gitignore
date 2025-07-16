@@ -41,6 +41,7 @@ src/main/resources/schema.sql
 
 ### Hide production properties
 ./src/main/resources/application-prod.properties
+./src/main/resources/application-dev.properties
 
 ### Hide Environmental variables
-.env
+.env**
