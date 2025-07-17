@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { User, AuthContextType } from "@/lib/types";
 
 const AuthContext = createContext<AuthContextType | null>(null);
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export function AuthProvider({children }: {children : React.ReactNode }){
     const [user, setUser] = useState<User | null>(null);
@@ -10,7 +11,7 @@ export function AuthProvider({children }: {children : React.ReactNode }){
 
     const checkAuth = async () => { 
         try{
-            const res = await fetch("http://localhost:8080/api/v1/auth/status",{
+            const res = await fetch(`${apiBaseUrl}/api/v1/auth/status`,{
                 credentials: "include",
             })
             
@@ -42,7 +43,7 @@ export function AuthProvider({children }: {children : React.ReactNode }){
         const responseBody = { email, password };
 
         try{
-            const res = await fetch("http://localhost:8080/api/v1/auth/login",{
+            const res = await fetch(`${apiBaseUrl}/api/v1/auth/login`,{
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,7 +73,7 @@ export function AuthProvider({children }: {children : React.ReactNode }){
 
     const signup = async(email : string, password: string) =>{
         try{
-            const res = await fetch("http://localhost:8080/api/v1/auth/signup",{
+            const res = await fetch(`${apiBaseUrl}/api/v1/auth/signup`,{
                 method : "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ export function AuthProvider({children }: {children : React.ReactNode }){
 
     const logout = async() => {
         try{
-            const res = await fetch("http://localhost:8080/api/v1/auth/logout",{
+            const res = await fetch(`${apiBaseUrl}/api/v1/auth/logout`,{
                 credentials : "include",
             });
             setUser(null);
