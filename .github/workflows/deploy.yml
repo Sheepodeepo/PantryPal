@@ -43,7 +43,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_INSTANCE_KEY }}
           HOSTNAME: ${{ secrets.SSH_HOST }}
           USER_NAME: ${{ secrets.SSH_USER_NAME }}
-          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_USER: ${{ secrets.DOCKER_HUB_USER }}
         run: |
           echo "$SSH_PRIVATE_KEY" > ssh_pantrypal_aws.pem
           chmod 600 ssh_pantrypal_aws.pem
