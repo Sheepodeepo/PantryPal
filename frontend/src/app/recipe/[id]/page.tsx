@@ -7,9 +7,10 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
     const { id } = await params;
     let recipe: Recipe | null = null;
     const cookieHeader = cookies().toString();
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     try{
-        const res = await fetch(`http://localhost:8080/api/v1/recipe/${id}`, {
+        const res = await fetch(`${apiBaseUrl}/api/v1/recipe/${id}`, {
             headers : {
                 "Cookie" : cookieHeader
             }

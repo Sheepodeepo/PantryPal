@@ -16,10 +16,11 @@ import { Recipe } from "@/lib/types";
 export default function Home(){
   const { isAuthenticated, loading } = useAuth();
   const [ recipes, setRecipes] = useState([]);
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchRecipes = async () => {
     try{
-      const res = await fetch("http://localhost:8080/api/v1/recipe",{
+      const res = await fetch(`${apiBaseUrl}/api/v1/recipe`,{
         credentials : "include",
       })
       const recipeData = await res.json();
@@ -38,7 +39,7 @@ export default function Home(){
 
   const handleDeleteRecipe = async(recipeId : number) => {    
     try {
-      await fetch(`http://localhost:8080/api/v1/recipe/${recipeId}`,{
+      await fetch(`${apiBaseUrl}/api/v1/recipe/${recipeId}`,{
         method : "DELETE",
         credentials : "include",
       })

@@ -145,6 +145,11 @@ public class RecipeController {
         return new ResponseEntity<>("Deleted Recipe: " + recipe.getName() + " successfully", HttpStatus.ACCEPTED);
     }
 
+    @GetMapping("/test/test")
+    public String testEndpoint(){
+        return "Testing Page";
+    }
+
     private String createRecipePrompt(MealType mealType, String ingredients){
         return recipePromptService.createGeminiPrompt(mealType, ingredients);
     }

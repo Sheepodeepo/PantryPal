@@ -24,6 +24,8 @@ export default function GenerateRecipeForm() {
     ingredients: string[]
     instructions: string[]
   } | null>(null)
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,7 +40,7 @@ export default function GenerateRecipeForm() {
 
 
     try {
-      const res = await fetch(`http://localhost:8080/api/v1/recipe`,{
+      const res = await fetch(`${apiBaseUrl}/api/v1/recipe`,{
         method : "POST",
         credentials : "include",
         headers: {
