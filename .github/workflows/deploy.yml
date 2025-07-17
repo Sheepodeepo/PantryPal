@@ -1,0 +1,105 @@
+name : Deploy Docker Image to EC2.
+
+on: 
+  push:
+    branches: [ "main" ]
+
+defaults:
+  run:
+    working-directory: ./Backend
+
+jobs:
+  deploy: 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log into Docker Hub
+        uses: docker/login-action@v3
+        with: 
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./Backend
+          platforms: linux/amd64
+          push: true
+          tags: cluelesslycoding/pantrypal-aws:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_INSTANCE_KEY }}
+          HOSTNAME: ${{ secrets.SSH_HOST }}
+          USER_NAME: ${{ secrets.SSH_USER_NAME }}
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ssh_pantrypal_aws.pem
+          chmod 600 ssh_pantrypal_aws.pem
+          
+          ssh -o StrictHostKeyChecking=no -i ssh_pantrypal_aws.pem ${USER_NAME}@${HOSTNAME} "
+            set -e  # Exit on any error
+            
+            # Update system and start Docker
+            sudo yum update -y
+            sudo service docker start
+            
+            
+            # Remove all other container and images if it exists 
+            sudo docker container prune
+            sudo docker image prune
+
+            # Stop and remove existing container if it exists
+            # sudo docker stop pantrypal-app || true
+            # sudo docker rm pantrypal-app || true
+            
+            # Remove old image to ensure we get the latest
+            # sudo docker rmi ${DOCKERHUB_USER}/pantrypal-aws:latest || true
+            
+            # Pull latest image
+            sudo docker pull ${DOCKERHUB_USER}/pantrypal-aws:latest
+            
+            # Run new container
+            sudo docker run -d \
+              --name pantrypal-app \
+              -p 80:8080 \
+              --env-file .env \
+              --restart unless-stopped \
+              ${DOCKERHUB_USER}/pantrypal-aws:latest
+              
+            # Verify deployment
+            echo 'Deployment completed successfully!'
+            sudo docker ps | grep pantrypal-app
+          "
+          
+          # Clean up SSH key
+          rm -f ssh_pantrypal_aws.pem
+              
+      # - name: Connect to EC2 and Build and Deploy Docker Image
+      #   env:
+      #       SSH_PRIVATE_KEY: ${{ secrets.EC2_INSTANCE_KEY }}
+      #       HOSTNAME: ${{secrets.SSH_HOST}}
+      #       USER_NAME: ${{secrets.SSH_USER_NAME}}
+      #       DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      
+      #   run: |
+      #     echo "$SSH_PRIVATE_KEY" > ssh_pantrypal_aws.pem && chmod 600 ssh_pantrypal_aws.pem
+      #     ssh -o StrictHostKeyChecking=no -i ssh_pantrypal_aws.pem ${USER_NAME}@${HOSTNAME} '
+
+      #         # Now we have got the access of EC2 and we will start the deploy .
+      #         sudo yum update -y 
+      #         sudo service docker start
+      #         sudo docker pull ${DOCKERHUB_USER}/pantrypal-aws:latest
+      #         sudo docker run -d -p 80:8080 --env-file .env ${DOCKERHUB_USER}/pantrypal-aws:latest
+      #         '
