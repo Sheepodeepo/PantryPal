@@ -4,14 +4,14 @@ on:
   push:
     branches: [ "main" ]
 
-defaults:
-  run:
-    working-directory: ./Backend
 
 jobs:
 
   build: 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Backend
     permissions:
       contents: read
       packages: write
