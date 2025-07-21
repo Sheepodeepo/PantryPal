@@ -26,3 +26,5 @@ Web Application for users to generate recipes when they don't know what to cook 
 ## Features 
 - Account Signup/Signin with Spring Security + JWT
 - Storage of Recipes with Spring Data JDBC
+
+_Adapted and Built upon [UCSD CSE 110 Github Project](https://github.com/ucsd-cse110-fa23/cse-110-project-team-32)_ 
