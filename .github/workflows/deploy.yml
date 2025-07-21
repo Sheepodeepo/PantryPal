@@ -53,5 +53,14 @@ jobs:
         run: sudo docker container prune -f
       - name: Delete Prior Docker Images
         run: sudo docker image prune -f
+      - name: Create .env file 
+        run: | 
+          cat > .env << EOF
+          API_KEY=${{ secrets.API_KEY }}
+          JDBC_URL=${{ secrets.PUBLIC_JDBC_URL }}
+          POSTGRES_USER=${{ secrets.PUBLIC_POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.PUBLIC_POSTGRES_PASSWORD }} 
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+
       - name: Run Docker Instance/Container 
-        run: sudo docker run -d -p 80:8080 --env-file .env cluelesslycoding/pantrypal-aws:latest
+        run: sudo docker run --restart unless-stopped -d -p 80:8080 --env-file .env cluelesslycoding/pantrypal-aws:latest
