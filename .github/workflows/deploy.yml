@@ -50,7 +50,7 @@ jobs:
       - name: Pull Docker Image
         run: sudo docker pull cluelesslycoding/pantrypal-aws:latest
       - name: Delete Prior Docker Containers
-        run: sudo docker container prune -f
+        run: sudo docker rm -f pantrypal-cd-pipeline-container || true
       - name: Delete Prior Docker Images
         run: sudo docker image prune -f
       - name: Create .env file 
@@ -63,4 +63,4 @@ jobs:
           JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
 
       - name: Run Docker Instance/Container 
-        run: sudo docker run -d -p 80:8080 --env-file .env cluelesslycoding/pantrypal-aws:latest
+        run: sudo docker run -d -p 80:8080 --env-file .env --name pantrypal-cd-pipeline-container cluelesslycoding/pantrypal-aws:latest
