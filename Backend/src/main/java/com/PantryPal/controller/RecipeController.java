@@ -148,6 +148,11 @@ public class RecipeController {
         return new ResponseEntity<>("Deleted Recipe: " + recipe.getName() + " successfully", HttpStatus.ACCEPTED);
     }
 
+    @GetMapping("/test")
+    public String baseTestEndpoint(){
+        return "First Testing Page";
+    }
+
     @GetMapping("/test/test")
     public String testEndpoint(){
         return "Updated Testing Page";
