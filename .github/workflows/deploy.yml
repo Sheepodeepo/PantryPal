@@ -63,4 +63,10 @@ jobs:
           JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
 
       - name: Run Docker Instance/Container 
-        run: sudo docker run -d -p 80:8080 --env-file .env --name pantrypal-cd-pipeline-container cluelesslycoding/pantrypal-aws:latest
+        run: |
+          sudo docker run -d \
+          -p 80:8080 \
+          --restart unless-stopped \
+          --env-file /home/ec2-user/.env \
+          --name pantrypal-cd-pipeline-container \
+          cluelesslycoding/pantrypal-aws:latest
