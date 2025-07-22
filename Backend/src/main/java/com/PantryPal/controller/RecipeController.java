@@ -155,7 +155,7 @@ public class RecipeController {
 
     @GetMapping("/test/test")
     public String testEndpoint(){
-        return "Updated Testing Page";
+        return "Testing Endpoint";
     }
 
     private String createRecipePrompt(MealType mealType, String ingredients){
