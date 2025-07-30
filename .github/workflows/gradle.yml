@@ -46,4 +46,5 @@ jobs:
         POSTGRES_USER: ${{ secrets.LOCAL_POSTGRES_USER }} 
         POSTGRES_PASSWORD: ${{ secrets.LOCAL_POSTGRES_PASSWORD }}
         JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        COOKIE_SECURE: ${{ secrets.COOKIE_SECURE }}
       run: ./gradlew build 
