@@ -3,6 +3,7 @@ package com.PantryPal.auth;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +27,8 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Value("${security.cookie.secure}")
+    private boolean cookieSecure;
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -57,7 +60,7 @@ public class SecurityConfig {
                                 ResponseCookie responseCookie = ResponseCookie.from("JWT")
                                         .path("/")
                                         .httpOnly(true)
-                                        .secure(true)
+                                        .secure(cookieSecure) // Secure only works on https
                                         .maxAge(0)
                                         .sameSite("Lax")
                                         .build();
@@ -81,7 +84,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000", "https://pantry-pal-liard-iota.vercel.app/"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000", "https://pantry-pal-liard-iota.vercel.app/", "https://www.pantrypal.live", "https://pantrypal.live"));
         configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
         configuration.setAllowCredentials(true);
