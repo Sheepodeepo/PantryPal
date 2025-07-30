@@ -79,7 +79,7 @@ public class UserController {
                     .secure(true)
                     .httpOnly(true)
                     .path("/")
-                    .sameSite("Lax")
+                    .sameSite("None")
                     .maxAge(jwtTokenAgeSecs)
                     .build();
             response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
