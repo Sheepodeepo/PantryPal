@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { Recipe } from "@/lib/types";
 
+export const dynamic = "force-dynamic"; // prevent static optimization
 export default async function RecipePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     let recipe: Recipe | null = null;
