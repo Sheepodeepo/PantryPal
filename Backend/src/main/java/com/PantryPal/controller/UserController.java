@@ -36,6 +36,8 @@ import java.util.Optional;
 @RestController
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    @Value("${security.cookie.secure}")
+    private boolean cookieSecure;
     @Value("${security.jwt.expiration-time}")
     private long jwtTokenAge;
     private final AuthenticationManager authenticationManager;
@@ -76,7 +78,7 @@ public class UserController {
             String jwtToken = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginUserRequest.getEmail()));
             ResponseCookie responseCookie = ResponseCookie
                     .from("JWT",jwtToken)
-                    .secure(true)
+                    .secure(cookieSecure)
                     .httpOnly(true)
                     .path("/")
                     .sameSite("None")
