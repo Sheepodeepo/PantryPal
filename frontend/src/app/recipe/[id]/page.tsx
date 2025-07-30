@@ -4,11 +4,14 @@ import Link from "next/link";
 import { Recipe } from "@/lib/types";
 
 export const dynamic = "force-dynamic"; // prevent static optimization
-export default async function RecipePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function RecipePage({ params }: { params: { id: string } }) {
     const { id } = await params;
     let recipe: Recipe | null = null;
-    const cookieHeader = cookies().toString();
+    // const cookieHeader = cookies().toString();
+    const cookieStore = cookies(); // No need to await
+    const jwt = (await cookieStore).get('JWT')?.value;
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const cookieHeader = jwt ? `JWT=${jwt}` : "";
 
     try{
         const res = await fetch(`${apiBaseUrl}/api/v1/recipe/${id}`, {
