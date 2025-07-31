@@ -7,29 +7,45 @@ export const dynamic = "force-dynamic"; // prevent static optimization
 export default async function RecipePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     let recipe: Recipe | null = null;
-    // const cookieHeader = cookies().toString();
-    const cookieStore = cookies(); // No need to await
-    const jwt = (await cookieStore).get('JWT')?.value;
+    const cookieStore = await cookies()
+    const jwt = cookieStore.get('JWT')?.value;
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
-    const cookieHeader = jwt ? `JWT=${jwt}` : "";
+    if (!jwt) {
+        console.error("JWT token is missing");
+        notFound();
+    }
+    if (!apiBaseUrl) {
+        console.error("API base URL is not defined");
+        notFound();
+    }
+    if (!id) {
+        console.error("Recipe ID is missing");
+        notFound();
+    }
 
+    // Fetch the recipe data from the API
     try{
         const res = await fetch(`${apiBaseUrl}/api/v1/recipe/${id}`, {
             headers : {
-                "Cookie" : cookieHeader
-            }
+                "Content-Type": "application/json",
+                "Cookie" : `JWT=${jwt}`, // Include JWT in the request headers
+                'Authorization': jwt ? `Bearer ${jwt}` : '',
+            },
+            cache: "no-store", // Ensure fresh data
         });
-        // console.log(res);
+        if (res.status === 404) {
+            notFound();
+        }
         if (!res.ok) {
+            console.error("Failed to fetch recipe:", res.statusText);
             throw new Error(`Failed to fetch recipe: ${res.status}`);
         }
         recipe = await res.json();
     }
     catch(error){
         console.log("Internal Server Error", error);
-        notFound();
+        throw new Error(`Failed to fetch recipe: ${error}`);
     }
-    
 
     if (recipe == null) return null; // safety fallback
     

@@ -17,7 +17,7 @@ export default function Footer(){
                     Home
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="/categories" className="text-gray-600 hover:text-gray-900">
                     Categories
                   </Link>
@@ -31,7 +31,7 @@ export default function Footer(){
                   <Link href="/about" className="text-gray-600 hover:text-gray-900">
                     About Us
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>
