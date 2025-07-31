@@ -1,7 +1,7 @@
 'use client';
 import { useAuth } from "@/lib/actions/AuthContext";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback  } from "react";
 import { HiArrowRight } from "react-icons/hi2";
 import {
   DropdownMenu,
@@ -18,7 +18,7 @@ export default function Home(){
   const [ recipes, setRecipes] = useState([]);
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  const fetchRecipes = async () => {
+  const fetchRecipes = useCallback(async () => {
     try{
       const res = await fetch(`${apiBaseUrl}/api/v1/recipe`,{
         credentials : "include",
@@ -28,14 +28,15 @@ export default function Home(){
     }
     catch(error){
       console.log(error);
-    }
-  }
+      
+      }
+  }, [apiBaseUrl]);
 
   useEffect(() => {
     if(isAuthenticated){
       fetchRecipes();
     }
-  }, [isAuthenticated]);
+  }, [fetchRecipes,isAuthenticated]);
 
   const handleDeleteRecipe = async(recipeId : number) => {    
     try {
