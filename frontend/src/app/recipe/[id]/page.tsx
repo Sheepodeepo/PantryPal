@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Recipe } from "@/lib/types";
 
 export const dynamic = "force-dynamic"; // prevent static optimization
-export default async function RecipePage({ params }: { params: { id: string } }) {
+export default async function RecipePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     let recipe: Recipe | null = null;
     // const cookieHeader = cookies().toString();
@@ -19,7 +19,7 @@ export default async function RecipePage({ params }: { params: { id: string } })
                 "Cookie" : cookieHeader
             }
         });
-        console.log(res);
+        // console.log(res);
         if (!res.ok) {
             throw new Error(`Failed to fetch recipe: ${res.status}`);
         }
