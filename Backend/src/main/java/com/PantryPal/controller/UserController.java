@@ -81,6 +81,7 @@ public class UserController {
                     .secure(cookieSecure)
                     .httpOnly(true)
                     .path("/")
+                    .domain(".pantrypal.live")
                     .sameSite("None")
                     .maxAge(jwtTokenAgeSecs)
                     .build();

@@ -61,6 +61,7 @@ public class SecurityConfig {
                                         .path("/")
                                         .httpOnly(true)
                                         .secure(cookieSecure) // Secure only works on https
+                                        .domain(".pantrypal.live")
                                         .maxAge(0)
                                         .sameSite("Lax")
                                         .build();
@@ -84,7 +85,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000", "https://pantry-pal-liard-iota.vercel.app/", "https://www.pantrypal.live", "https://pantrypal.live"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://pantry-pal-liard-iota.vercel.app", "https://www.pantrypal.live", "https://pantrypal.live"));
         configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
         configuration.setAllowCredentials(true);
