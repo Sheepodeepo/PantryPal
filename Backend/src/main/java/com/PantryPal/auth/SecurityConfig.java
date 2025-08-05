@@ -59,11 +59,11 @@ public class SecurityConfig {
                                 //Creates new cookie and invalidates it and overwrites response Header/Cookies with this invalid Cookie to effectively remove JWT Token stored in a cookie
                                 ResponseCookie responseCookie = ResponseCookie.from("JWT")
                                         .path("/")
+                                        .domain(".pantrypal.live")
                                         .httpOnly(true)
                                         .secure(cookieSecure) // Secure only works on https
-                                        .domain(".pantrypal.live")
                                         .maxAge(0)
-                                        .sameSite("Lax")
+                                        .sameSite("None")
                                         .build();
                                 response.setHeader(HttpHeaders.SET_COOKIE,responseCookie.toString());
                                 response.setStatus(HttpServletResponse.SC_OK);
