@@ -1,7 +1,7 @@
 'use client';
 import { useAuth } from "@/lib/actions/AuthContext";
 import Link from "next/link";
-import { useEffect, useState, useCallback  } from "react";
+import { useEffect, useState  } from "react";
 import { HiArrowRight } from "react-icons/hi2";
 import {
   DropdownMenu,
