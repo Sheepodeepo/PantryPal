@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Recipe } from "@/lib/types";
@@ -12,11 +12,11 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!jwt) {
         console.error("JWT token is missing");
-        notFound();
+        redirect('/login');
     }
     if (!apiBaseUrl) {
         console.error("API base URL is not defined");
-        notFound();
+        throw new Error("API base URL is not defined");
     }
     if (!id) {
         console.error("Recipe ID is missing");
