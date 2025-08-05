@@ -18,7 +18,7 @@ export default function Home(){
   const [ recipes, setRecipes] = useState([]);
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  const fetchRecipes = useCallback(async () => {
+  const fetchRecipes = async () => {
     try{
       const res = await fetch(`${apiBaseUrl}/api/v1/recipe`,{
         credentials : "include",
@@ -28,9 +28,9 @@ export default function Home(){
     }
     catch(error){
       console.log(error);
-      
-      }
-  }, [apiBaseUrl]);
+    }
+  }
+
 
   useEffect(() => {
     if(isAuthenticated){
